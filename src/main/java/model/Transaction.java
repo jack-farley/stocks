@@ -1,9 +1,9 @@
 package model;
 
-import model.Holdings.Holding;
+import model.Securities.AbstractSecurity;
 
 public class Transaction {
 
-    private Holding holding;
+    private AbstractSecurity holding;
     private int quantity;
 }

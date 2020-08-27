@@ -1,7 +1,9 @@
 package data;
 
 import java.math.BigDecimal;
-import java.net.http.HttpResponse;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import kong.unirest.JsonNode;
 
 public class AlphaVantageDataManager implements DataManager {
 
@@ -22,11 +24,17 @@ public class AlphaVantageDataManager implements DataManager {
         String function = "GLOBAL_QUOTE";
         String datatype = "json";
 
-        String finalURL = String.format("%s/%s?%s=%s&%s=%s&%s=%s&%s=%s", url, endpoint, "function", function, "symbol",
-                ticker, "datatype", datatype, "apikey", apiKey);
+        String URLEndpoint = String.format("%s/%s", url, endpoint);
 
-        HttpResponse<String> response = Unirest.get(finalURL);
-        // TODO
-        return null;
+        HttpResponse <JsonNode> response = Unirest.get(URLEndpoint)
+                .queryString("function", function)
+                .queryString("symbol", ticker)
+                .queryString("datatype", datatype)
+                .queryString("apiKey", apiKey)
+                .asJson();
+
+        String priceString = response.getBody().getObject().getString("05. price");
+
+        return new BigDecimal (priceString);
     }
 }

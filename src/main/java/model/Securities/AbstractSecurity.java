@@ -2,10 +2,9 @@ package model.Securities;
 
 public abstract class AbstractSecurity implements Security {
 
-    enum Type {
+    enum SecurityType {
         Stock,
     }
-
-    private Type type;
+    private SecurityType type;
     private String symbol;
 }

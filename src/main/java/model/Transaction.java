@@ -1,6 +1,6 @@
 package model;
 
-import model.Securities.AbstractSecurity;
+import marketdata.securities.AbstractSecurity;
 
 public class Transaction {
 

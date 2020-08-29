@@ -8,7 +8,7 @@ import kong.unirest.JsonNode;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
-public class AlphaVantageDataManager implements DataManager {
+public class AlphaVantageDataGrabber implements DataGrabber {
 
     final String url = "https://www.alphavantage.co";
     final String endpoint = "query";
@@ -19,7 +19,7 @@ public class AlphaVantageDataManager implements DataManager {
      * Creates a DataManager using the Alpha Vantage API.
      * @param apiKey The user's api key for alpha vantage.
      */
-    public AlphaVantageDataManager(String apiKey){
+    public AlphaVantageDataGrabber(String apiKey){
         this.apiKey = apiKey;
     }
 

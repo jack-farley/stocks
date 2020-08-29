@@ -1,7 +1,7 @@
 package model;
 
-import model.Market.Market;
-import model.Market.StockMarket;
+import marketdata.Market;
+import marketdata.StockMarket;
 
 import java.util.ArrayList;
 

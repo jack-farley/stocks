@@ -1,15 +1,21 @@
 package marketdata;
 
-import marketdata.securities.AbstractSecurity;
 import marketdata.securities.Security;
 import marketdata.securities.SecurityType;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 
 /**
  * A representation of a market containing various securities.
  */
 public interface Market {
+
+    /**
+     * Returns an array of the securities currently tracked by this market.
+     * @return the tracked securities
+     */
+    Collection<Security> getSecurities();
 
     /**
      * Returns the security associated with the specified ticker.

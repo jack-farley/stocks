@@ -1,11 +1,11 @@
 package marketdata;
 
-import marketdata.securities.AbstractSecurity;
 import marketdata.securities.Security;
 import marketdata.securities.SecurityType;
 import marketdata.securities.Stock;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -19,6 +19,18 @@ public class StockMarket implements Market {
 
     public StockMarket(){
         this.tracked_securities = new HashMap<String, Security>();
+    }
+
+    @Override
+    public Collection<Security> getSecurities() {
+        Lock readLock = marketLock.readLock();
+        readLock.lock();
+
+        try {
+            return this.tracked_securities.values();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override

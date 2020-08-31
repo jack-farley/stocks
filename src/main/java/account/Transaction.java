@@ -1,4 +1,4 @@
-package model;
+package account;
 
 import marketdata.securities.Security;
 
@@ -20,7 +20,7 @@ public class Transaction {
      * @param security The security of this transaction.
      * @param quantityChange The quantity being traded (positive for a buy, negative for a sell).
      */
-    public Transaction(Security security, int quantityChange) {
+    protected Transaction(Security security, int quantityChange) {
         this.security = security;
         this.quantityChange = quantityChange;
         this.timestamp = LocalDate.now();

@@ -1,7 +1,8 @@
-package model;
+package account;
 
 import marketdata.securities.Security;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 /**
@@ -18,7 +19,7 @@ public class Position {
      *
      * @param security The position's security.
      */
-    public Position(Security security) {
+    protected Position(Security security) {
         this.security = security;
         this.quantity = 0;
     }
@@ -27,7 +28,7 @@ public class Position {
      * Gets the security associated with this position.
      * @return the security.
      */
-    public Security getSecurity() {
+    protected Security getSecurity() {
         return this.security;
     }
 
@@ -37,7 +38,7 @@ public class Position {
      * @param quantityChange The change in the quantity of the security held in this position.
      * @throws IllegalArgumentException if this transaction would result in a negative quantity for this position.
      */
-    public void newTransaction(int quantityChange) throws IllegalArgumentException {
+    protected void newTransaction(int quantityChange) throws IllegalArgumentException {
         // Make sure we can execute this transaction.
         if (this.quantity + quantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be less than 0.");
@@ -47,6 +48,15 @@ public class Position {
         Transaction newTransaction = new Transaction(this.security, quantity);
         this.quantity += quantityChange;
         this.transactions.add(newTransaction);
+    }
+
+    /**
+     * Gets the value of the position.
+     * @return a BigDecimal value
+     */
+    protected BigDecimal getValue() {
+        BigDecimal securityValue = security.getPrice();
+        return securityValue.multiply(BigDecimal.valueOf(this.quantity));
     }
 
 

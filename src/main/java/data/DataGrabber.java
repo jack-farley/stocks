@@ -5,6 +5,13 @@ import java.math.BigDecimal;
 public interface DataGrabber {
 
     /**
+     * Gets the interval at which all market stocks can bea repeatedly updated with this grabber.
+     *
+     * @return the interval in milliseconds
+     */
+    int getUpdateInterval();
+
+    /**
      * Used to get the current price of a specified stock.
      *
      * @param ticker the ticker of this security.

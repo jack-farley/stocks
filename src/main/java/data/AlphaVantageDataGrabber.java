@@ -12,6 +12,7 @@ public class AlphaVantageDataGrabber implements DataGrabber {
 
     final String url = "https://www.alphavantage.co";
     final String endpoint = "query";
+    final int updateInterval = 5000;
 
     private final String apiKey;
 
@@ -21,6 +22,11 @@ public class AlphaVantageDataGrabber implements DataGrabber {
      */
     public AlphaVantageDataGrabber(String apiKey){
         this.apiKey = apiKey;
+    }
+
+    @Override
+    public int getUpdateInterval() {
+        return this.updateInterval;
     }
 
     @Override

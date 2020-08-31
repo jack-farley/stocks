@@ -1,4 +1,4 @@
-package model;
+package account;
 
 import marketdata.securities.Security;
 
@@ -23,7 +23,7 @@ public class Portfolio {
      * @param name The name of the portfolio.
      * @param initialCash The initial amount of cash in the portfolio.
      */
-    public Portfolio(String name, BigDecimal initialCash) {
+    protected Portfolio(String name, BigDecimal initialCash) {
         this.name = name;
         this.cash = initialCash;
     }
@@ -33,7 +33,7 @@ public class Portfolio {
      *
      * @param amount The amount of cash being added to the portfolio.
      */
-    public void addCash(BigDecimal amount) {
+    protected void addCash(BigDecimal amount) {
         this.cash = this.cash.add(amount);
     }
 
@@ -44,7 +44,7 @@ public class Portfolio {
      * @throws IllegalArgumentException if the amount being removed from the account is greater than the amount of
      * cash in the account.
      */
-    public void removeCash(BigDecimal amount) throws IllegalArgumentException {
+    protected void removeCash(BigDecimal amount) throws IllegalArgumentException {
         if (this.cash.compareTo(amount) < 0) {
             throw new IllegalArgumentException("Not enough cash in the portfolio.");
         }
@@ -56,7 +56,7 @@ public class Portfolio {
      *
      * @return the positions.
      */
-    public Collection<Position> getPositions() {
+    protected Collection<Position> getPositions() {
         return this.positions.values();
     }
 
@@ -66,8 +66,21 @@ public class Portfolio {
      * @param security The security.
      * @return The position associated with that security, or null if no such position exists.
      */
-    public Position getPosition(Security security) {
+    protected Position getPosition(Security security) {
         return positions.get(security);
+    }
+
+    /**
+     * Gets the value of this portfolio.
+     *
+     * @return a BigDecimal value
+     */
+    protected BigDecimal getValue() {
+        BigDecimal sum = BigDecimal.ZERO;
+        for (Position position : this.positions.values()) {
+            sum = sum.add(position.getValue());
+        }
+        return sum;
     }
 
     /**
@@ -78,7 +91,7 @@ public class Portfolio {
      * @throws IllegalArgumentException if the user is buying and does not have enough cash or if the user is selling
      * more shares than they own.
      */
-    public void tradeSecurity(Security security, int quantityChange) throws IllegalArgumentException {
+    protected void tradeSecurity(Security security, int quantityChange) throws IllegalArgumentException {
         Position position = this.getPosition(security);
         boolean newPosition = false;
         if (position == null) {
@@ -98,6 +111,8 @@ public class Portfolio {
         this.cash = this.cash.subtract(tradeValue);
         this.positions.put(security, position);
     }
+
+
 
 
 }

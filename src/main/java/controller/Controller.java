@@ -1,6 +1,6 @@
 package controller;
 
-import account.Account;
+import account.UserAccount;
 import data.AlphaVantageDataGrabber;
 import data.DataGrabber;
 import data.DataManager;
@@ -14,7 +14,7 @@ public class Controller {
     final BigDecimal DEFAULT_STARTING_CASH = BigDecimal.valueOf(1000);
 
     private Market market;
-    private Account account;
+    private UserAccount account;
     private DataManager dataManager;
 
     /**
@@ -40,6 +40,6 @@ public class Controller {
      */
     public void newAccount(BigDecimal cash) {
         this.market = new StockMarket();
-        this.account = new Account(cash);
+        this.account = new UserAccount(cash);
     }
 }

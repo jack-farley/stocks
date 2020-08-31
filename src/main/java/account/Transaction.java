@@ -25,4 +25,5 @@ public class Transaction {
         this.quantityChange = quantityChange;
         this.timestamp = LocalDate.now();
     }
+
 }

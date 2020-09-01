@@ -41,8 +41,9 @@ public class Controller {
      * Loads an account from a file.
      *
      * @param fileName the name of the file
+     * @throws IllegalArgumentException if the account cannot be loaded
      */
-    public void loadAccount(String fileName) {
+    public void loadAccount(String fileName) throws IllegalArgumentException {
         Account account = null;
         try {
             FileInputStream fileIn = new FileInputStream(fileName);
@@ -50,11 +51,8 @@ public class Controller {
             account = (UserAccount) in.readObject();
             in.close();
             fileIn.close();
-        } catch (IOException i) {
-            i.printStackTrace();
-        } catch (ClassNotFoundException c) {
-            System.out.println("Account class not found");
-            c.printStackTrace();
+        } catch (IOException | ClassNotFoundException i) {
+            throw new IllegalArgumentException();
         }
 
         if (account != null) {
@@ -77,7 +75,7 @@ public class Controller {
             fileOut.close();
             System.out.println("Serialized account data is saved in " + fileName);
         } catch (IOException i) {
-            i.printStackTrace();
+            throw new IllegalArgumentException();
         }
     }
 }

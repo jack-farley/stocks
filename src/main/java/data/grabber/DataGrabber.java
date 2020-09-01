@@ -1,6 +1,4 @@
-package data;
-
-import java.math.BigDecimal;
+package data.grabber;
 
 public interface DataGrabber {
 
@@ -12,12 +10,12 @@ public interface DataGrabber {
     int getUpdateInterval();
 
     /**
-     * Used to get the current price of a specified stock.
+     * Used to get information about a specified security.
      *
-     * @param ticker the ticker of this security.
-     * @return the current price of the security, or null if the ticker is not recognized.
+     * @param ticker the ticker of the security
+     * @return information about the security, in the form of a SecurityDetail
      */
-    BigDecimal getPrice(String ticker);
+    SecurityDetail getDetail(String ticker);
 
     /**
      *

@@ -1,4 +1,4 @@
-package marketdata.securities;
+package data.market.securities;
 
 import java.math.BigDecimal;
 import java.util.concurrent.locks.Lock;

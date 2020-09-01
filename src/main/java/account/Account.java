@@ -1,6 +1,7 @@
 package account;
 
-import marketdata.securities.Security;
+import data.DataManager;
+import data.market.Market;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -45,34 +46,37 @@ public interface Account {
     /**
      * Remove a portfolio from the account and sell all of its assets.
      *
+     * @param data DataManager for current market data.
      * @param name the name of the portfolio
      * @return true if the portfolio is liquidated successfully, false otherwise.
      * If the portfolio is not liquidated successfully, it is likely because
      * no portfolio exists with the specified name.
      */
-    boolean liquidatePortfolio (String name);
+    boolean liquidatePortfolio (DataManager data, String name);
 
     /**
      * Buys the security in the specified portfolio.
      *
+     * @param data DataManager for current market data.
      * @param portfolioName The name of the portfolio.
-     * @param security The security to be bought.
+     * @param ticker The ticker of the security to be bought.
      * @param quantity The amount of the security to be bought.
      * @return true if the security is bought successfully, false otherwise.
      * Purchase could fail if the portfolio is not found or if it does not have enough
      * cash to make the purchase.
      */
-    boolean buySecurity (String portfolioName, Security security, int quantity);
+    boolean buySecurity (DataManager data, String portfolioName, String ticker, int quantity);
 
     /**
      * Sells the security in the specified portfolio.
      *
+     * @param data DataManager for current market data.
      * @param portfolioName the name of the portfolio
-     * @param security the security to be sold
+     * @param ticker the ticker of the security to be sold
      * @param quantity the amount of the security to sell
      * @return true if the security is sold successfully, false otherwise. A false
      * return is likely because the portfolio could not be found or because
      * there was not enough of the security owned to sell the specified amount.
      */
-    boolean sellSecurity (String portfolioName, Security security, int quantity);
+    boolean sellSecurity (DataManager data, String portfolioName, String ticker, int quantity);
 }

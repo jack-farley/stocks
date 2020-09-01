@@ -1,8 +1,8 @@
-package marketdata;
+package data.market;
 
-import marketdata.securities.Security;
-import marketdata.securities.SecurityType;
-import marketdata.securities.Stock;
+import data.market.securities.Security;
+import data.market.securities.SecurityType;
+import data.market.securities.Stock;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -23,18 +23,23 @@ public class StockMarket implements Market {
 
     @Override
     public Collection<Security> getSecurities() {
+        return tracked_securities.values();
+    }
+
+    @Override
+    public Security getSecurity(String ticker) {
         Lock readLock = marketLock.readLock();
         readLock.lock();
 
         try {
-            return this.tracked_securities.values();
+            return tracked_securities.get(ticker);
         } finally {
             readLock.unlock();
         }
     }
 
     @Override
-    public Security getSecurity(String ticker) throws SecurityNotFoundException {
+    public BigDecimal getPrice(String ticker) throws SecurityNotFoundException {
         Lock readLock = marketLock.readLock();
         readLock.lock();
 
@@ -45,7 +50,7 @@ public class StockMarket implements Market {
                 throw new SecurityNotFoundException("This market does not have a security with the provided ticker.");
             }
 
-            return security;
+            return security.getPrice();
         } finally {
             readLock.unlock();
         }
@@ -79,5 +84,10 @@ public class StockMarket implements Market {
         } finally {
             writeLock.unlock();
         }
+    }
+
+    @Override
+    public void clear() {
+        this.tracked_securities.clear();
     }
 }

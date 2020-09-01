@@ -1,8 +1,8 @@
 package account;
 
-import marketdata.Market;
-import marketdata.securities.Security;
+import data.DataManager;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,10 +12,10 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
-public class UserAccount implements Account {
+public class UserAccount implements Account, Serializable {
 
     private final Map<String, Portfolio> portfolios = new HashMap<String, Portfolio>();
-    private final ReadWriteLock accountLock = new ReentrantReadWriteLock();
+    private transient final ReadWriteLock accountLock = new ReentrantReadWriteLock();
 
     private BigDecimal addedCash;
     private BigDecimal cash;
@@ -86,7 +86,7 @@ public class UserAccount implements Account {
     }
 
     @Override
-    public boolean liquidatePortfolio (String name) {
+    public boolean liquidatePortfolio (DataManager data, String name) {
         Lock writeLock = accountLock.writeLock();
         writeLock.lock();
 
@@ -95,7 +95,7 @@ public class UserAccount implements Account {
             if (portfolio == null) {
                 return false;
             }
-            BigDecimal value = portfolio.getValue();
+            BigDecimal value = portfolio.getValue(data);
             this.cash = this.cash.add(value);
             portfolios.remove(name);
             return true;
@@ -105,7 +105,7 @@ public class UserAccount implements Account {
     }
 
     @Override
-    public boolean buySecurity (String portfolioName, Security security, int quantity) {
+    public boolean buySecurity (DataManager data, String portfolioName, String ticker, int quantity) {
         Lock writeLock = accountLock.writeLock();
         writeLock.lock();
 
@@ -116,7 +116,7 @@ public class UserAccount implements Account {
             }
 
             try {
-                portfolio.tradeSecurity(security, quantity);
+                portfolio.tradeSecurity(data, ticker, quantity);
             } catch (IllegalArgumentException e) {
                 return false;
             }
@@ -127,7 +127,7 @@ public class UserAccount implements Account {
     }
 
     @Override
-    public boolean sellSecurity (String portfolioName, Security security, int quantity) {
+    public boolean sellSecurity (DataManager data, String portfolioName, String ticker, int quantity) {
         Lock writeLock = accountLock.writeLock();
         writeLock.lock();
 
@@ -138,7 +138,7 @@ public class UserAccount implements Account {
             }
 
             try {
-                portfolio.tradeSecurity(security, quantity * (-1));
+                portfolio.tradeSecurity(data, ticker, quantity * (-1));
             } catch (IllegalArgumentException e) {
                 return false;
             }

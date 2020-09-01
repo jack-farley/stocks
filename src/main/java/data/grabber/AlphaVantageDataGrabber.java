@@ -1,7 +1,8 @@
-package data;
+package data.grabber;
 
 import java.math.BigDecimal;
 
+import data.market.securities.SecurityType;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.JsonNode;
@@ -30,7 +31,7 @@ public class AlphaVantageDataGrabber implements DataGrabber {
     }
 
     @Override
-    public BigDecimal getPrice(String ticker) {
+    public SecurityDetail getDetail(String ticker) {
         String function = "GLOBAL_QUOTE";
         String datatype = "json";
 
@@ -46,7 +47,7 @@ public class AlphaVantageDataGrabber implements DataGrabber {
         JSONObject stockInfo = response.getBody().getObject();
         String priceString = stockInfo.getString("05. price");
 
-        return new BigDecimal (priceString);
+        return new SecurityDetail (ticker, new BigDecimal (priceString), SecurityType.Stock);
     }
 
     @Override

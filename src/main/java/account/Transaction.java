@@ -1,15 +1,14 @@
 package account;
 
-import marketdata.securities.Security;
-
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  * A representation of a transaction, i.e. buying or selling a stock.
  */
-public class Transaction {
+public class Transaction implements Serializable {
 
-    private Security security;
+    private String ticker;
     // positive indicates a buy, negative a sell
     private int quantityChange;
     private LocalDate timestamp;
@@ -17,11 +16,11 @@ public class Transaction {
     /**
      * Creates a new transaction based on the given parameters.
      *
-     * @param security The security of this transaction.
+     * @param ticker The ticker of this security's transaction.
      * @param quantityChange The quantity being traded (positive for a buy, negative for a sell).
      */
-    protected Transaction(Security security, int quantityChange) {
-        this.security = security;
+    protected Transaction(String ticker, int quantityChange) {
+        this.ticker = ticker;
         this.quantityChange = quantityChange;
         this.timestamp = LocalDate.now();
     }

@@ -1,35 +1,28 @@
 package account;
 
-import marketdata.securities.Security;
+import data.DataManager;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
 /**
  * Represents a position in a portfolio.
  */
-public class Position {
+public class Position implements Serializable {
 
-    private Security security;
+    private String ticker;
     private int quantity;
     private ArrayList<Transaction> transactions;
 
     /**
      * Creates a new position for the given security.
      *
-     * @param security The position's security.
+     * @param ticker The ticker of this position's security.
      */
-    protected Position(Security security) {
-        this.security = security;
+    protected Position(String ticker) {
+        this.ticker = ticker;
         this.quantity = 0;
-    }
-
-    /**
-     * Gets the security associated with this position.
-     * @return the security.
-     */
-    protected Security getSecurity() {
-        return this.security;
     }
 
     /**
@@ -45,17 +38,19 @@ public class Position {
         }
 
         // Execute the transaction.
-        Transaction newTransaction = new Transaction(this.security, quantity);
+        Transaction newTransaction = new Transaction(this.ticker, quantity);
         this.quantity += quantityChange;
         this.transactions.add(newTransaction);
     }
 
     /**
      * Gets the value of the position.
+     *
+     * @param data DataManager to get current data.
      * @return a BigDecimal value
      */
-    protected BigDecimal getValue() {
-        BigDecimal securityValue = security.getPrice();
+    protected BigDecimal getValue(DataManager data) {
+        BigDecimal securityValue = data.getPrice(this.ticker);
         return securityValue.multiply(BigDecimal.valueOf(this.quantity));
     }
 

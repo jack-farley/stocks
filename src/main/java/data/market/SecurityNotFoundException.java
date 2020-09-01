@@ -1,4 +1,4 @@
-package marketdata;
+package data.market;
 
 public class SecurityNotFoundException extends Exception {
 

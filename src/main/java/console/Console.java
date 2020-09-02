@@ -15,29 +15,6 @@ public class Console {
 
     private Console() {};
 
-    /**
-     * Prints a list of commands.
-     */
-    private void help() {
-        System.out.println("General commands:");
-        System.out.println("new <cash>: create a new account with the specified amount of cash.");
-        System.out.println("load <account_file>: load a new account from the account_file");
-        System.out.println("save <account_file>: save the current account to the account_file");
-        System.out.println("portfolios: list the portfolios in the current account");
-        System.out.println("portfolio <portfolio_name>: navigate to the portfolio with name portfolio_name");
-        System.out.println("exit: close the program");
-        System.out.println("");
-
-        System.out.println("Portfolio-specific commands:");
-        System.out.println("info: print all info about the current portfolio");
-        System.out.println("buy <security_ticker> <quantity>: buy the security with ticker security_ticker in the " +
-                "specified quantity");
-        System.out.println("sell <security_ticker> <quantity>: sell the security with ticker security_ticker in " +
-                "the specified quantity");
-        System.out.println("back: exit the current portfolio.");
-        System.out.println("");
-    }
-
     /** Creates a new account. */
     private void newAccount() {
         int cash = scanner.nextInt();
@@ -64,13 +41,6 @@ public class Console {
         }
     }
 
-    /** Prints the names of all portfolios in the account. */
-    private void getPortfolios() {
-        for (ReadOnlyPortfolio portfolio : controller.getPortfolios()) {
-            System.out.println(portfolio.name());
-        }
-    }
-
     /** Moves the user into the current portfolio. */
     private void enterPortfolio() {
         String name = scanner.next();
@@ -87,7 +57,7 @@ public class Console {
 
     /** Print the command line starter. */
     private void printCommandLine() {
-        if (this.currentPortfolio.equals("")) {
+        if (this.currentPortfolio == null) {
             System.out.println("account/>");
         }
         else {
@@ -95,10 +65,93 @@ public class Console {
         }
     }
 
+
+
+    // Printing the commands
+
+    /**
+     * Prints the general commands.
+     */
+    private void general_commands() {
+        System.out.println("General commands:");
+        System.out.println("new <cash>: create a new account with the specified amount of cash.");
+        System.out.println("load <account_file>: load a new account from the account_file");
+        System.out.println("save <account_file>: save the current account to the account_file");
+        System.out.println("exit: close the program");
+        System.out.println("");
+    }
+
+    /**
+     * Prints the help command.
+     */
+    private void help_command() {
+        System.out.println("help: list commands");
+        System.out.println("");
+    }
+
+    /**
+     * Prints a list of account-level commands.
+     */
+    private void account_commands() {
+        this.general_commands();
+
+        System.out.println("Account commands:");
+        System.out.println("info: displays important metrics and lists portfolios");
+        System.out.println("createportfolio <portfolio_name>: creates a new portfolio with the provided name");
+        System.out.println("portfolio <portfolio_name>: navigate to the portfolio with name portfolio_name");
+        System.out.println("");
+
+        this.help_command();
+    }
+
+    /**
+     * Prints a list of portfolio-specific commands.
+     */
+    private void portfolio_commands() {
+        this.general_commands();
+
+        System.out.println("Portfolio commands:");
+        System.out.println("info: displays important metrics and lists positions");
+        System.out.println("buy <security_ticker> <quantity>: buy the security with ticker security_ticker in the " +
+                "specified quantity");
+        System.out.println("sell <security_ticker> <quantity>: sell the security with ticker security_ticker in " +
+                "the specified quantity");
+        System.out.println("back: exit the current portfolio.");
+        System.out.println("");
+
+        System.out.println("help: list commands");
+        System.out.println("");
+
+        this.help_command();
+    }
+
+    /**
+     * Displays help message.
+     */
+    private void help() {
+        if (this.currentPortfolio == null) {
+            this.account_commands();
+        }
+        else {
+            this.portfolio_commands();
+        }
+    }
+
+    /**
+     * Handles inputted commands.
+     *
+     * @return true if commands should continue to be processed, false if the program should exit.
+     */
     private boolean handleCommand() {
         this.printCommandLine();
         String command = scanner.next();
         switch (command) {
+            // Help
+            case "help":
+                help();
+                break;
+
+            // General commands
             case "new":
                 this.newAccount();
                 break;
@@ -108,17 +161,17 @@ public class Console {
             case "save":
                 this.saveAccount();
                 break;
-            case "portfolios":
-                this.getPortfolios();
-                break;
+            case "exit":
+                return false;
+
+            // Account Commands
             case "portfolio":
                 this.enterPortfolio();
                 break;
-            case "help":
-                help();
-                break;
-            case "exit":
-                return false;
+
+            // Portfolio Commands
+
+            // Default
             default:
                 System.out.println(command + " is not a valid command.");
         }

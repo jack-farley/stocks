@@ -1,13 +1,13 @@
 package data.grabber;
 
-import java.math.BigDecimal;
-
 import data.market.securities.SecurityType;
 import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
 import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
+
+import java.math.BigDecimal;
 
 public class AlphaVantageDataGrabber implements DataGrabber {
 

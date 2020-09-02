@@ -1,5 +1,6 @@
 package console;
 
+import account.ReadOnlyPortfolio;
 import controller.Controller;
 import controller.ControllerFactory;
 
@@ -10,7 +11,7 @@ public class Console {
     private final Controller controller = ControllerFactory.getConsoleController();
     private final Scanner scanner = new Scanner(System.in);
 
-    private String currentPortfolio = "";
+    private ReadOnlyPortfolio currentPortfolio = null;
 
     private Console() {};
 
@@ -65,21 +66,20 @@ public class Console {
 
     /** Prints the names of all portfolios in the account. */
     private void getPortfolios() {
-        String[] names = controller.getPortfolioNames();
-        for (String name : names) {
-            System.out.println(name);
+        for (ReadOnlyPortfolio portfolio : controller.getPortfolios()) {
+            System.out.println(portfolio.name());
         }
     }
 
     /** Moves the user into the current portfolio. */
     private void enterPortfolio() {
-        String portfolioName = scanner.next();
-        String confirmedName = controller.checkPortfolio(portfolioName);
-        if (confirmedName == null) {
+        String name = scanner.next();
+        ReadOnlyPortfolio portfolio = controller.getPortfolio(name);
+        if (portfolio == null) {
             System.out.println("There is no portfolio with that name.");
         }
         else {
-            this.currentPortfolio = confirmedName;
+            this.currentPortfolio = portfolio;
         }
     }
 

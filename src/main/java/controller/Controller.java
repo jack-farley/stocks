@@ -1,11 +1,12 @@
 package controller;
 
 import account.Account;
-import account.UserAccount;
+import account.ReadOnlyPortfolio;
 import data.StockDataManager;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.util.Collection;
 
 public class Controller {
 
@@ -34,7 +35,7 @@ public class Controller {
      * @param cash initial cash
      */
     public void newAccount(BigDecimal cash) {
-        this.account = new UserAccount(cash);
+        this.account = new Account(cash);
     }
 
     /**
@@ -48,7 +49,7 @@ public class Controller {
         try {
             FileInputStream fileIn = new FileInputStream(fileName);
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            account = (UserAccount) in.readObject();
+            account = (Account) in.readObject();
             in.close();
             fileIn.close();
         } catch (IOException | ClassNotFoundException i) {
@@ -80,21 +81,21 @@ public class Controller {
     }
 
     /**
-     * Returns a list of portfolio names for the current account.
+     * Returns a collection of the portfolios in the account.
      *
-     * @return a list of portfolio names
+     * @return a collection of portfolios.
      */
-    public String[] getPortfolioNames() {
+    public Collection<? extends ReadOnlyPortfolio> getPortfolios() {
         return this.account.getPortfolios();
     }
 
     /**
-     * Checks whether this is the name of a portfolio in the current account.
+     * Returns the portfolio in the current account with the specified name.
      *
-     * @param portfolioName the portfolio name
-     * @return the name, or null if there is no portfolio with that name
+     * @param name the name of the portfolio
+     * @return the ReadOnlyPortfolio, or null if no such portfolio exists with that name
      */
-    public String checkPortfolio(String portfolioName) {
-        return this.account.checkPortfolio(portfolioName);
+    public ReadOnlyPortfolio getPortfolio (String name) {
+        return this.account.getPortfolio(name);
     }
 }

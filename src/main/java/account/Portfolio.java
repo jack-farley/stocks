@@ -7,14 +7,17 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * Represents a portfolio of investments in the simulation.
  */
-public class Portfolio implements Serializable {
+public class Portfolio implements ReadOnlyPortfolio, Serializable {
 
-    private String name;
-    private Map<String, Position> positions = new HashMap<String, Position>();
+    private final String name;
+    private final Map<String, Position> positions = new HashMap<String, Position>();
+    private transient final ReadWriteLock accountLock;
 
     private BigDecimal cash;
 
@@ -24,10 +27,65 @@ public class Portfolio implements Serializable {
      * @param name The name of the portfolio.
      * @param initialCash The initial amount of cash in the portfolio.
      */
-    protected Portfolio(String name, BigDecimal initialCash) {
+    protected Portfolio(String name, BigDecimal initialCash, ReadWriteLock accountLock) {
         this.name = name;
         this.cash = initialCash;
+        this.accountLock = accountLock;
     }
+
+
+    @Override
+    public String name() {
+        Lock readLock = accountLock.readLock();
+        readLock.lock();
+
+        try {
+            return this.name;
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public BigDecimal value(DataManager data) {
+        Lock readLock = accountLock.readLock();
+        readLock.lock();
+
+        try {
+            BigDecimal sum = BigDecimal.ZERO;
+            for (ReadOnlyPosition position : this.positions.values()) {
+                sum = sum.add(position.value(data));
+            }
+            return sum;
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public Collection<? extends ReadOnlyPosition> positions() {
+        Lock readLock = accountLock.readLock();
+        readLock.lock();
+
+        try {
+            return this.positions.values();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public ReadOnlyPosition position(String ticker) {
+        Lock readLock = accountLock.readLock();
+        readLock.lock();
+
+        try {
+            return this.positions.get(ticker);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
 
     /**
      * Add cash to the portfolio.
@@ -53,47 +111,6 @@ public class Portfolio implements Serializable {
     }
 
     /**
-     * Gets the name of the portfolio.
-     *
-     * @return the name
-     */
-    protected String getName() {
-        return this.name;
-    }
-
-    /**
-     * Gets the list of positions in this portfolio.
-     *
-     * @return the positions.
-     */
-    protected Collection<Position> getPositions() {
-        return this.positions.values();
-    }
-
-    /**
-     * Gets the position in this portfolio associated with the specified security.
-     *
-     * @param ticker The security's ticker.
-     * @return The position associated with that security, or null if no such position exists.
-     */
-    protected Position getPosition(String ticker) {
-        return positions.get(ticker);
-    }
-
-    /**
-     * Gets the value of this portfolio.
-     *
-     * @return a BigDecimal value
-     */
-    protected BigDecimal getValue(DataManager data) {
-        BigDecimal sum = BigDecimal.ZERO;
-        for (Position position : this.positions.values()) {
-            sum = sum.add(position.getValue(data));
-        }
-        return sum;
-    }
-
-    /**
      * Trade the specified security with the specified quantity change.
      *
      * @param ticker The ticker of the security to be traded.
@@ -102,11 +119,15 @@ public class Portfolio implements Serializable {
      * more shares than they own.
      */
     protected void tradeSecurity(DataManager data, String ticker, int quantityChange) throws IllegalArgumentException {
-        Position position = this.getPosition(ticker);
+        Position position = this.positions.get(ticker);
         boolean newPosition = false;
         if (position == null) {
-            position = new Position(ticker);
+            position = new Position(ticker, accountLock);
             newPosition = true;
+        }
+
+        if (newPosition) {
+            this.positions.put(ticker, new Position(ticker, accountLock));
         }
 
         BigDecimal price = data.getPrice(ticker);
@@ -121,8 +142,4 @@ public class Portfolio implements Serializable {
         this.cash = this.cash.subtract(tradeValue);
         this.positions.put(ticker, position);
     }
-
-
-
-
 }

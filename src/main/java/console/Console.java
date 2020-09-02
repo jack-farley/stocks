@@ -10,6 +10,8 @@ public class Console {
     private final Controller controller = ControllerFactory.getConsoleController();
     private final Scanner scanner = new Scanner(System.in);
 
+    private String currentPortfolio = "";
+
     private Console() {};
 
     /**
@@ -33,7 +35,6 @@ public class Console {
                 "the specified quantity");
         System.out.println("back: exit the current portfolio.");
         System.out.println("");
-
     }
 
     /** Creates a new account. */
@@ -62,10 +63,40 @@ public class Console {
         }
     }
 
+    /** Prints the names of all portfolios in the account. */
+    private void getPortfolios() {
+        String[] names = controller.getPortfolioNames();
+        for (String name : names) {
+            System.out.println(name);
+        }
+    }
+
+    /** Moves the user into the current portfolio. */
+    private void enterPortfolio() {
+        String portfolioName = scanner.next();
+        String confirmedName = controller.checkPortfolio(portfolioName);
+        if (confirmedName == null) {
+            System.out.println("There is no portfolio with that name.");
+        }
+        else {
+            this.currentPortfolio = confirmedName;
+        }
+    }
+
     /* Add functions for remaining commands here. */
 
+    /** Print the command line starter. */
+    private void printCommandLine() {
+        if (this.currentPortfolio.equals("")) {
+            System.out.println("account/>");
+        }
+        else {
+            System.out.println("account/" + this.currentPortfolio + "/>");
+        }
+    }
+
     private boolean handleCommand() {
-        System.out.print("> ");
+        this.printCommandLine();
         String command = scanner.next();
         switch (command) {
             case "new":
@@ -76,6 +107,12 @@ public class Console {
                 break;
             case "save":
                 this.saveAccount();
+                break;
+            case "portfolios":
+                this.getPortfolios();
+                break;
+            case "portfolio":
+                this.enterPortfolio();
                 break;
             case "help":
                 help();

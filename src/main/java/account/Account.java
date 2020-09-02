@@ -1,10 +1,7 @@
 package account;
 
 import data.DataManager;
-import data.market.Market;
-
 import java.math.BigDecimal;
-import java.util.Collection;
 
 /**
  * Represents a simulated investment account.
@@ -19,21 +16,6 @@ public interface Account {
     void addCash(BigDecimal amount);
 
     /**
-     * Gets the portfolios in this account.
-     *
-     * @return a collection of portfolios
-     */
-    Collection<Portfolio> getPortfolios();
-
-    /**
-     * Gets the portfolio with the given name.
-     *
-     * @param name a portfolio's name
-     * @return a portfolio, or null if no portfolio exists with the specified name.
-     */
-    public Portfolio getPortfolio(String name);
-
-    /**
      * Creates a new portfolio with the specified name.
      *
      * @param name the name
@@ -42,6 +24,21 @@ public interface Account {
      * specified name is already in use.
      */
     boolean createPortfolio (String name);
+
+    /**
+     * Gets the names of the portfolios in this account.
+     *
+     * @return an array of portfolio names
+     */
+    String[] getPortfolios();
+
+    /**
+     * Confirms that the specified name is the name of a portfolio in the account.
+     *
+     * @param portfolioName the name of the portfolio
+     * @return the name, or null if there is no portfolio with that name
+     */
+    String checkPortfolio(String portfolioName);
 
     /**
      * Remove a portfolio from the account and sell all of its assets.

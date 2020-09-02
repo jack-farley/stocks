@@ -44,30 +44,6 @@ public class UserAccount implements Account, Serializable {
     }
 
     @Override
-    public Collection<Portfolio> getPortfolios() {
-        Lock readLock = accountLock.readLock();
-        readLock.lock();
-
-        try {
-            return portfolios.values();
-        } finally {
-            readLock.unlock();
-        }
-    }
-
-    @Override
-    public Portfolio getPortfolio(String name) {
-        Lock readLock = accountLock.readLock();
-        readLock.lock();
-
-        try {
-            return this.portfolios.get(name);
-        } finally {
-            readLock.unlock();
-        }
-    }
-
-    @Override
     public boolean createPortfolio (String name) {
         Lock writeLock = accountLock.writeLock();
         writeLock.lock();
@@ -82,6 +58,30 @@ public class UserAccount implements Account, Serializable {
             return true;
         } finally {
             writeLock.unlock();
+        }
+    }
+
+    @Override
+    public String[] getPortfolios() {
+        Collection<Portfolio> portfolios = this.portfolios.values();
+        int num = portfolios.size();
+        String[] names = new String[num];
+        int index = 0;
+        for (Portfolio portfolio : portfolios) {
+            names[index] = portfolio.getName();
+            index ++;
+        }
+        return names;
+    }
+
+    @Override
+    public String checkPortfolio(String portfolioName) {
+        Portfolio portfolio = this.portfolios.get(portfolioName);
+        if (portfolio == null) {
+            return null;
+        }
+        else {
+            return portfolio.getName();
         }
     }
 

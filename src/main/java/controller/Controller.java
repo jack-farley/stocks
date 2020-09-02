@@ -78,4 +78,23 @@ public class Controller {
             throw new IllegalArgumentException();
         }
     }
+
+    /**
+     * Returns a list of portfolio names for the current account.
+     *
+     * @return a list of portfolio names
+     */
+    public String[] getPortfolioNames() {
+        return this.account.getPortfolios();
+    }
+
+    /**
+     * Checks whether this is the name of a portfolio in the current account.
+     *
+     * @param portfolioName the portfolio name
+     * @return the name, or null if there is no portfolio with that name
+     */
+    public String checkPortfolio(String portfolioName) {
+        return this.account.checkPortfolio(portfolioName);
+    }
 }

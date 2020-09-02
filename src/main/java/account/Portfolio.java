@@ -53,6 +53,15 @@ public class Portfolio implements Serializable {
     }
 
     /**
+     * Gets the name of the portfolio.
+     *
+     * @return the name
+     */
+    protected String getName() {
+        return this.name;
+    }
+
+    /**
      * Gets the list of positions in this portfolio.
      *
      * @return the positions.

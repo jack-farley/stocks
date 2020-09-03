@@ -14,4 +14,7 @@ public interface ReadOnlyPosition {
 
     /** Returns the value of this position. */
     BigDecimal value(DataManager data);
+
+    /** Returns the price of the security. */
+    BigDecimal price(DataManager data);
 }

@@ -1,6 +1,7 @@
 package console;
 
 import account.ReadOnlyPortfolio;
+import account.ReadOnlyPosition;
 import controller.Controller;
 import controller.ControllerFactory;
 
@@ -8,6 +9,12 @@ import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class Console {
+    private final int TICKER_BLOCK = 8;
+    private final int PRICE_BLOCK = 12;
+    private final int QUANTITY_BLOCK = 6;
+    private final int VALUE_BLOCK = 12;
+
+
     private final Controller controller = ControllerFactory.getConsoleController();
     private final Scanner scanner = new Scanner(System.in);
 
@@ -53,6 +60,92 @@ public class Console {
         }
     }
 
+    /** Prints info about the position. */
+    private void positionInfo(ReadOnlyPosition position) {
+        String tickerString = position.security();
+        int quantity = position.quantity();
+        BigDecimal price = this.controller.getPositionSecurityPrice(position);
+        BigDecimal value = this.controller.getPositionValue(position);
+
+        System.out.println(tickerString + "    " + quantity + "    " + price + "    " + value);
+    }
+
+    /** Prints info about the current portfolio. */
+    private void portfolioInfo() {
+        System.out.println("");
+        System.out.println("Portfolio - " + this.currentPortfolio.name());
+
+        for (ReadOnlyPosition position : this.currentPortfolio.positions()) {
+            this.positionInfo (position);
+        }
+        System.out.println("");
+    }
+
+    /** Prints info about the account. */
+    private void accountInfo() {
+        System.out.println("");
+        System.out.println("Account");
+
+        for (ReadOnlyPortfolio portfolio : this.controller.getPortfolios()) {
+            System.out.println(portfolio.name() + "    " + this.controller.getPortfolioValue(portfolio));
+        }
+
+        System.out.println("");
+    }
+
+    /** Creates a new portfolio. */
+    private void createPortfolio() {
+        String name = scanner.next();
+        boolean success = this.controller.createPortfolio(name);
+        if (success) {
+            System.out.println("Success!");
+        }
+        else {
+            System.out.println("Unable to create a new portfolio with name " + name + ".");
+        }
+    }
+
+    /** Buy the specified security. */
+    private void buySecurity() {
+        String ticker = scanner.next();
+        int quantity = scanner.nextInt();
+
+        boolean success = this.controller.buySecurity(this.currentPortfolio, ticker, quantity);
+        if (success) {
+            System.out.println("Success!");
+        }
+        else {
+            System.out.println("Unable to execute trade");
+        }
+    }
+
+    /** Sell the specified security. */
+    private void sellSecurity() {
+        String ticker = scanner.next();
+        int quantity = scanner.nextInt();
+
+        boolean success = this.controller.sellSecurity(this.currentPortfolio, ticker, quantity);
+        if (success) {
+            System.out.println("Success!");
+        }
+        else {
+            System.out.println("Unable to execute trade");
+        }
+    }
+
+    /** Liquidate the current portfolio. */
+    private void liquidatePortfolio() {
+        boolean success = this.controller.liquidatePortfolio(this.currentPortfolio);
+
+        if (success) {
+            System.out.println("Success!");
+            this.currentPortfolio = null;
+        }
+        else {
+            System.out.println("Unable to liquidate portfolio.");
+        }
+    }
+
     /* Add functions for remaining commands here. */
 
     /** Print the command line starter. */
@@ -64,8 +157,6 @@ public class Console {
             System.out.println("account/" + this.currentPortfolio + "/>");
         }
     }
-
-
 
     // Printing the commands
 
@@ -116,6 +207,7 @@ public class Console {
                 "specified quantity");
         System.out.println("sell <security_ticker> <quantity>: sell the security with ticker security_ticker in " +
                 "the specified quantity");
+        System.out.println("liquidate: sell all securities and close the portfolio");
         System.out.println("back: exit the current portfolio.");
         System.out.println("");
 
@@ -168,8 +260,31 @@ public class Console {
             case "portfolio":
                 this.enterPortfolio();
                 break;
+            case "info":
+                if (this.currentPortfolio == null) {
+                    this.accountInfo();
+                }
+                else {
+                    this.portfolioInfo();
+                    break;
+                }
+            case "createportfolio":
+                this.createPortfolio();
+                break;
 
             // Portfolio Commands
+            case "buy":
+                this.buySecurity();
+                break;
+            case "sell":
+                this.sellSecurity();
+                break;
+            case "liquidate":
+                this.liquidatePortfolio();
+                break;
+            case "back":
+                this.currentPortfolio = null;
+                break;
 
             // Default
             default:

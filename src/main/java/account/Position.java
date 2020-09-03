@@ -67,6 +67,11 @@ public class Position implements ReadOnlyPosition, Serializable {
         }
     }
 
+    @Override
+    public BigDecimal price(DataManager data) {
+        return null;
+    }
+
     /**
      * Creates a new transaction and updates the position to reflect it.
      *

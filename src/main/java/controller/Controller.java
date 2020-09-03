@@ -1,12 +1,16 @@
 package controller;
 
 import account.Account;
+import account.Portfolio;
 import account.ReadOnlyPortfolio;
+import account.ReadOnlyPosition;
+import data.DataManager;
 import data.StockDataManager;
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.concurrent.locks.Lock;
 
 public class Controller {
 
@@ -97,5 +101,85 @@ public class Controller {
      */
     public ReadOnlyPortfolio getPortfolio (String name) {
         return this.account.getPortfolio(name);
+    }
+
+    /**
+     * Creates a new portfolio with the specified name.
+     *
+     * @param name the name of the portfolio
+     * @return true if the portfolio is created successfully, false otherwise
+     */
+    public boolean createPortfolio (String name) {
+        return this.account.createPortfolio(name);
+    }
+
+    /**
+     * Gets the price of this position's security.
+     *
+     * @param position the position
+     * @return the security price
+     */
+    public BigDecimal getPositionSecurityPrice(ReadOnlyPosition position) {
+        return position.price(this.dataManager);
+    }
+
+    /**
+     * Gets the value of this position.
+     *
+     * @param position the position
+     * @return the position's value
+     */
+    public BigDecimal getPositionValue(ReadOnlyPosition position) {
+        return position.value(this.dataManager);
+    }
+
+    /**
+     * Gets the value of this portfolio.
+     *
+     * @param portfolio the portfolio
+     * @return the portfolio's value
+     */
+    public BigDecimal getPortfolioValue(ReadOnlyPortfolio portfolio) {
+        return portfolio.value(this.dataManager);
+    }
+
+    /**
+     * Remove a portfolio from the account and sell all of its assets.
+     *
+     * @param portfolio the portfolio
+     * @return true if the portfolio is liquidated successfully, false otherwise.
+     * If the portfolio is not liquidated successfully, it is likely because
+     * no portfolio exists with the specified name.
+     */
+    public boolean liquidatePortfolio (ReadOnlyPortfolio portfolio) {
+        return this.account.liquidatePortfolio(this.dataManager, portfolio);
+    }
+
+    /**
+     * Buys the security in the specified portfolio.
+     *
+     * @param portfolio The portfolio.
+     * @param ticker The ticker of the security to be bought.
+     * @param quantity The amount of the security to be bought.
+     * @return true if the security is bought successfully, false otherwise.
+     * Purchase could fail if the portfolio is not found or if it does not have enough
+     * cash to make the purchase.
+     */
+    public boolean buySecurity (ReadOnlyPortfolio portfolio, String ticker, int quantity) {
+        return this.account.buySecurity(this.dataManager, portfolio, ticker, quantity);
+    }
+
+    /**
+     * Sells the security in the specified portfolio.
+     *
+     * @param portfolio the portfolio
+     * @param ticker the ticker of the security to be sold
+     * @param quantity the amount of the security to sell
+     * @return true if the security is sold successfully, false otherwise. A false
+     * return is likely because the portfolio could not be found or because
+     * there was not enough of the security owned to sell the specified amount.
+     */
+    public boolean sellSecurity (ReadOnlyPortfolio portfolio, String ticker, int quantity) {
+        return this.account.sellSecurity(this.dataManager, portfolio, ticker, quantity);
     }
 }

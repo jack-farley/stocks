@@ -15,9 +15,9 @@ public class StockDataManager implements DataManager {
     private DataGrabber grabber;
     private Updater updater;
 
-    public StockDataManager(String alphaVantageAPIKey) {
+    public StockDataManager(DataGrabber grabber) {
         this.market = new StockMarket();
-        this.grabber = new AlphaVantageDataGrabber(alphaVantageAPIKey);
+        this.grabber = grabber;
         this.updater = new Updater(grabber.getUpdateInterval(), grabber, this.market);
         this.updater.start();
     }

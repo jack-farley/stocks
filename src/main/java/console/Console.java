@@ -4,6 +4,10 @@ import account.ReadOnlyPortfolio;
 import account.ReadOnlyPosition;
 import controller.Controller;
 import controller.ControllerFactory;
+import data.grabber.AlphaVantageDataGrabber;
+import data.grabber.DataGrabber;
+import data.grabber.DataGrabberFactory;
+import data.grabber.DataGrabberType;
 
 import java.math.BigDecimal;
 import java.util.Scanner;
@@ -15,7 +19,7 @@ public class Console {
     private final int VALUE_BLOCK = 12;
 
 
-    private final Controller controller = ControllerFactory.getConsoleController();
+    private Controller controller = null;
     private final Scanner scanner = new Scanner(System.in);
 
     private ReadOnlyPortfolio currentPortfolio = null;
@@ -293,9 +297,72 @@ public class Console {
         return true;
     }
 
+    /**
+     * Sets up a controller with a AlphaVantage data grabber.
+     *
+     * @return true if successful, false otherwise
+     */
+    private boolean alphaVantageSetUp() {
+        System.out.println("Please enter your api key:");
+        System.out.print(">");
+
+        String apiKey = scanner.next();
+        DataGrabber grabber = DataGrabberFactory.newAlphaVantageGrabber(apiKey);
+        this.controller = ControllerFactory.getController(grabber);
+        return true;
+    }
+
+    /**
+     * Sets up the data grabber for this type.
+     *
+     * @param type the type of data grabber to set up
+     * @return true if successful, false otherwise
+     */
+    private boolean routeGrabberType(DataGrabberType type) {
+        switch (type) {
+            case AlphaVantage:
+                return alphaVantageSetUp();
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Set up the program with a data grabber using a supported api.
+     *
+     * @return true if we need to repeat the process, false otherwise.
+     */
+    private void setUpData() {
+        System.out.println("Please choose a supported API to use for current market data.");
+        System.out.println("The following API types are supported:");
+
+        for (DataGrabberType type : DataGrabberType.values()) {
+            System.out.println(type.name());
+        }
+        System.out.println();
+
+        boolean success = false;
+        while (!success) {
+            System.out.println("Please enter the name of one of the list APIs to continue.");
+            System.out.print(">");
+            String grabberType = scanner.next();
+
+            for (DataGrabberType type : DataGrabberType.values()) {
+                if (grabberType.equals(type.name())) {
+                    success = routeGrabberType(type);
+                }
+            }
+            if (!success) {
+                System.out.println("Unable to load data API.");
+                System.out.println();
+            }
+        }
+    }
+
     public static void main(String[] args) {
         Console console = new Console();
         System.out.println("Please enter a command, or \"help\" for a list of valid commands.");
+        console.setUpData();
         while (console.handleCommand());
     }
 }

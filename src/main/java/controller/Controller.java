@@ -1,29 +1,28 @@
 package controller;
 
 import account.Account;
-import account.Portfolio;
 import account.ReadOnlyPortfolio;
 import account.ReadOnlyPosition;
 import data.DataManager;
 import data.StockDataManager;
+import data.grabber.DataGrabber;
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.concurrent.locks.Lock;
 
 public class Controller {
 
     final BigDecimal DEFAULT_STARTING_CASH = BigDecimal.valueOf(1000);
 
     private Account account;
-    private StockDataManager dataManager;
+    private DataManager dataManager;
 
     /**
      * Creates a new controller.
      */
-    public Controller(String alphaVantageAPIKey) {
-        this.dataManager = new StockDataManager(alphaVantageAPIKey);
+    public Controller(DataGrabber grabber) {
+        this.dataManager = new StockDataManager(grabber);
         this.newAccount(this.DEFAULT_STARTING_CASH);
     }
 

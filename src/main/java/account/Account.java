@@ -143,13 +143,7 @@ public class Account implements ReadOnlyAccount, Serializable {
             if (confirmedPortfolio == null) {
                 return false;
             }
-
-            try {
-                confirmedPortfolio.tradeSecurity(data, ticker, quantity);
-            } catch (IllegalArgumentException e) {
-                return false;
-            }
-            return true;
+            return confirmedPortfolio.tradeSecurity(data, ticker, quantity);
         } finally {
             writeLock.unlock();
         }
@@ -176,12 +170,7 @@ public class Account implements ReadOnlyAccount, Serializable {
                 return false;
             }
 
-            try {
-                confirmedPortfolio.tradeSecurity(data, ticker, quantity * (-1));
-            } catch (IllegalArgumentException e) {
-                return false;
-            }
-            return true;
+            return confirmedPortfolio.tradeSecurity(data, ticker, quantity * (-1));
         } finally {
             writeLock.unlock();
         }

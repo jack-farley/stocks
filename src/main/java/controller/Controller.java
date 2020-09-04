@@ -116,7 +116,7 @@ public class Controller {
      * Gets the price of this position's security.
      *
      * @param position the position
-     * @return the security price
+     * @return the security price, or null if the price cannot be found
      */
     public BigDecimal getPositionSecurityPrice(ReadOnlyPosition position) {
         return position.price(this.dataManager);
@@ -126,7 +126,7 @@ public class Controller {
      * Gets the value of this position.
      *
      * @param position the position
-     * @return the position's value
+     * @return the position's value, or null if the value cannot be found
      */
     public BigDecimal getPositionValue(ReadOnlyPosition position) {
         return position.value(this.dataManager);
@@ -136,7 +136,7 @@ public class Controller {
      * Gets the value of this portfolio.
      *
      * @param portfolio the portfolio
-     * @return the portfolio's value
+     * @return the portfolio's value, or null if the value cannot be found
      */
     public BigDecimal getPortfolioValue(ReadOnlyPortfolio portfolio) {
         return portfolio.value(this.dataManager);

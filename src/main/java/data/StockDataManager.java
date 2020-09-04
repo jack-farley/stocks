@@ -1,5 +1,6 @@
 package data;
 
+import data.grabber.APICallException;
 import data.grabber.AlphaVantageDataGrabber;
 import data.grabber.DataGrabber;
 import data.grabber.SecurityDetail;
@@ -38,8 +39,12 @@ public class StockDataManager implements DataManager {
 
         // if it's not in our market, add it
         if (security == null) {
-            SecurityDetail detail = this.grabber.getDetail(ticker);
-            this.market.addSecurity(detail.getTicker(), detail.getType(), detail.getPrice());
+            try {
+                SecurityDetail detail = this.grabber.getDetail(ticker);
+                this.market.addSecurity(detail.getTicker(), detail.getType(), detail.getPrice());
+            } catch (APICallException e) {
+                return null;
+            }
         }
 
         assert security != null;

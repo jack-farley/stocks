@@ -64,6 +64,16 @@ public class Console {
         }
     }
 
+    /** Returns the string representation of the inputted monetary value. */
+    private String valueString(BigDecimal val) {
+        if (val == null) {
+            return "_";
+        }
+        else {
+            return val.toString();
+        }
+    }
+
     /** Prints info about the position. */
     private void positionInfo(ReadOnlyPosition position) {
         String tickerString = position.security();
@@ -71,7 +81,9 @@ public class Console {
         BigDecimal price = this.controller.getPositionSecurityPrice(position);
         BigDecimal value = this.controller.getPositionValue(position);
 
-        System.out.println(tickerString + "    " + quantity + "    " + price + "    " + value);
+
+        System.out.println(tickerString + "    " + quantity + "    " + valueString(price) + "    "
+                + valueString(value));
     }
 
     /** Prints info about the current portfolio. */
@@ -91,7 +103,7 @@ public class Console {
         System.out.println("Account");
 
         for (ReadOnlyPortfolio portfolio : this.controller.getPortfolios()) {
-            System.out.println(portfolio.name() + "    " + this.controller.getPortfolioValue(portfolio));
+            System.out.println(portfolio.name() + "    " + valueString(this.controller.getPortfolioValue(portfolio)));
         }
 
         System.out.println("");
@@ -308,8 +320,12 @@ public class Console {
 
         String apiKey = scanner.next();
         DataGrabber grabber = DataGrabberFactory.newAlphaVantageGrabber(apiKey);
-        this.controller = ControllerFactory.getController(grabber);
-        return true;
+        boolean success = grabber.testSetup();
+        if (success) {
+            this.controller = ControllerFactory.getController(grabber);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -329,8 +345,6 @@ public class Console {
 
     /**
      * Set up the program with a data grabber using a supported api.
-     *
-     * @return true if we need to repeat the process, false otherwise.
      */
     private void setUpData() {
         System.out.println("Please choose a supported API to use for current market data.");
@@ -361,8 +375,12 @@ public class Console {
 
     public static void main(String[] args) {
         Console console = new Console();
-        System.out.println("Please enter a command, or \"help\" for a list of valid commands.");
-        console.setUpData();
-        while (console.handleCommand());
+        try {
+            System.out.println("Please enter a command, or \"help\" for a list of valid commands.");
+            console.setUpData();
+            while (console.handleCommand());
+        } finally {
+            console.controller.close();
+        }
     }
 }

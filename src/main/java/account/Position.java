@@ -69,7 +69,14 @@ public class Position implements ReadOnlyPosition, Serializable {
 
     @Override
     public BigDecimal price(DataManager data) {
-        return null;
+        Lock readLock = accountLock.readLock();
+        readLock.lock();
+
+        try {
+            return data.getPrice(this.ticker);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**

@@ -10,7 +10,7 @@ public interface ReadOnlyPortfolio {
     /** Returns the name of the portfolio. */
     String name();
 
-    /** Returns the value of this portfolio. */
+    /** Returns the value of this portfolio, or null if the value cannot be found. */
     BigDecimal value(DataManager data);
 
     /**

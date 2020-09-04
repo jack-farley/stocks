@@ -54,7 +54,11 @@ public class Portfolio implements ReadOnlyPortfolio, Serializable {
         try {
             BigDecimal sum = BigDecimal.ZERO;
             for (ReadOnlyPosition position : this.positions.values()) {
-                sum = sum.add(position.value(data));
+                BigDecimal positionVal = position.value(data);
+                if (positionVal == null) {
+                    return null;
+                }
+                sum = sum.add(positionVal);
             }
             return sum;
         } finally {
@@ -115,10 +119,16 @@ public class Portfolio implements ReadOnlyPortfolio, Serializable {
      *
      * @param ticker The ticker of the security to be traded.
      * @param quantityChange The change to be achieved in the held quantity.
-     * @throws IllegalArgumentException if the user is buying and does not have enough cash or if the user is selling
-     * more shares than they own.
+     * @return true if the trade is executed successfully, false otherwise
      */
-    protected void tradeSecurity(DataManager data, String ticker, int quantityChange) throws IllegalArgumentException {
+    protected boolean tradeSecurity(DataManager data, String ticker, int quantityChange) {
+        // Make sure we can find this security
+        BigDecimal price = data.getPrice(ticker);
+        if (price == null) {
+            return false;
+        }
+
+        // Find the position if there is one in our portfolio
         Position position = this.positions.get(ticker);
         boolean newPosition = false;
         if (position == null) {
@@ -126,20 +136,21 @@ public class Portfolio implements ReadOnlyPortfolio, Serializable {
             newPosition = true;
         }
 
+        // Put the position in our portfolio
         if (newPosition) {
             this.positions.put(ticker, new Position(ticker, accountLock));
         }
 
-        BigDecimal price = data.getPrice(ticker);
         BigDecimal tradeValue = price.multiply(BigDecimal.valueOf(quantityChange));
 
         // Make sure the user has enough cash if this is a buy
         if (quantityChange < 0 && this.cash.compareTo(tradeValue) < 0) {
-            throw new IllegalArgumentException("The portfolio does not have enough cash to make this buy.");
+            return false;
         }
 
         position.newTransaction(quantityChange);
         this.cash = this.cash.subtract(tradeValue);
         this.positions.put(ticker, position);
+        return true;
     }
 }

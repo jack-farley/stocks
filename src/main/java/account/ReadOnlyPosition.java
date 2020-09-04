@@ -12,9 +12,9 @@ public interface ReadOnlyPosition {
     /** Returns the quantity of the given security held in this position. */
     int quantity();
 
-    /** Returns the value of this position. */
+    /** Returns the value of this position, or null if the value cannot be found. */
     BigDecimal value(DataManager data);
 
-    /** Returns the price of the security. */
+    /** Returns the price of the security, or null if the value cannot be found. */
     BigDecimal price(DataManager data);
 }

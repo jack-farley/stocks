@@ -1,5 +1,6 @@
 package data;
 
+import data.grabber.APICallException;
 import data.grabber.DataGrabber;
 import data.grabber.SecurityDetail;
 import data.market.Market;
@@ -63,7 +64,10 @@ public class Updater extends Thread {
      * @param security the security
      */
     private void updateSecurity(Security security) {
-        SecurityDetail detail = grabber.getDetail(security.getTicker());
-        security.updatePrice(detail.getPrice());
+        try {
+            SecurityDetail detail = grabber.getDetail(security.getTicker());
+            security.updatePrice(detail.getPrice());
+        } catch (APICallException ignored) {
+        }
     }
 }

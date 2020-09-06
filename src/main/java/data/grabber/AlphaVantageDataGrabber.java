@@ -43,10 +43,10 @@ public class AlphaVantageDataGrabber implements DataGrabber {
                 .queryString("function", function)
                 .queryString("symbol", ticker)
                 .queryString("datatype", datatype)
-                .queryString("apiKey", this.apiKey)
+                .queryString("apikey", this.apiKey)
                 .asJson();
 
-        JSONObject stockInfo = response.getBody().getObject();
+        JSONObject stockInfo = response.getBody().getObject().getJSONObject("Global Quote");
         try {
             String priceString = stockInfo.getString("05. price");
             if (priceString == null) {
@@ -69,7 +69,7 @@ public class AlphaVantageDataGrabber implements DataGrabber {
                 .queryString("function", function)
                 .queryString("keywords", search)
                 .queryString("datatype", datatype)
-                .queryString("apiKey", this.apiKey)
+                .queryString("apikey", this.apiKey)
                 .asJson();
 
         JSONArray stocks = response.getBody().getArray();

@@ -89,7 +89,7 @@ public class Console {
     /** Prints info about the current portfolio. */
     private void portfolioInfo() {
         System.out.println("");
-        System.out.println("Portfolio - " + this.currentPortfolio.name());
+        System.out.println("Portfolio Information (" + this.currentPortfolio.name() + ")");
 
         for (ReadOnlyPosition position : this.currentPortfolio.positions()) {
             this.positionInfo (position);
@@ -100,7 +100,9 @@ public class Console {
     /** Prints info about the account. */
     private void accountInfo() {
         System.out.println("");
-        System.out.println("Account");
+        System.out.println("Account Information");
+        System.out.println("Cash: " + this.controller.getAccount().getCash().toString());
+        System.out.println("");
 
         for (ReadOnlyPortfolio portfolio : this.controller.getPortfolios()) {
             System.out.println(portfolio.name() + "    " + valueString(this.controller.getPortfolioValue(portfolio)));
@@ -167,10 +169,10 @@ public class Console {
     /** Print the command line starter. */
     private void printCommandLine() {
         if (this.currentPortfolio == null) {
-            System.out.println("account/>");
+            System.out.print("account/> ");
         }
         else {
-            System.out.println("account/" + this.currentPortfolio + "/>");
+            System.out.print("account/" + this.currentPortfolio.name() + "/> ");
         }
     }
 
@@ -215,6 +217,7 @@ public class Console {
      * Prints a list of portfolio-specific commands.
      */
     private void portfolio_commands() {
+        System.out.println();
         this.general_commands();
 
         System.out.println("Portfolio commands:");
@@ -225,10 +228,7 @@ public class Console {
                 "the specified quantity");
         System.out.println("liquidate: sell all securities and close the portfolio");
         System.out.println("back: exit the current portfolio.");
-        System.out.println("");
-
-        System.out.println("help: list commands");
-        System.out.println("");
+        System.out.println();
 
         this.help_command();
     }
@@ -282,8 +282,8 @@ public class Console {
                 }
                 else {
                     this.portfolioInfo();
-                    break;
                 }
+                break;
             case "createportfolio":
                 this.createPortfolio();
                 break;
@@ -316,7 +316,7 @@ public class Console {
      */
     private boolean alphaVantageSetUp() {
         System.out.println("Please enter your api key:");
-        System.out.print(">");
+        System.out.print("> ");
 
         String apiKey = scanner.next();
         DataGrabber grabber = DataGrabberFactory.newAlphaVantageGrabber(apiKey);
@@ -358,7 +358,7 @@ public class Console {
         boolean success = false;
         while (!success) {
             System.out.println("Please enter the name of one of the list APIs to continue.");
-            System.out.print(">");
+            System.out.print("> ");
             String grabberType = scanner.next();
 
             for (DataGrabberType type : DataGrabberType.values()) {
@@ -376,8 +376,8 @@ public class Console {
     public static void main(String[] args) {
         Console console = new Console();
         try {
-            System.out.println("Please enter a command, or \"help\" for a list of valid commands.");
             console.setUpData();
+            System.out.println("Please enter a command, or \"help\" for a list of valid commands.");
             while (console.handleCommand());
         } finally {
             console.controller.close();

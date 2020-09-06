@@ -1,6 +1,7 @@
 package controller;
 
 import account.Account;
+import account.ReadOnlyAccount;
 import account.ReadOnlyPortfolio;
 import account.ReadOnlyPosition;
 import data.DataManager;
@@ -81,6 +82,15 @@ public class Controller {
         } catch (IOException i) {
             throw new IllegalArgumentException();
         }
+    }
+
+    /**
+     * Returns the account associated with this controller.
+     *
+     * @return a ReadOnlyAccount
+     */
+    public ReadOnlyAccount getAccount() {
+        return this.account;
     }
 
     /**

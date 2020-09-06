@@ -54,6 +54,11 @@ public class Account implements ReadOnlyAccount, Serializable {
         }
     }
 
+    @Override
+    public BigDecimal getCash() {
+        return this.cash;
+    }
+
     /**
      * Adds cash to the simulated investment account.
      *

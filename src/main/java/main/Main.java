@@ -13,7 +13,8 @@ public class Main {
 
         else {
             System.out.println("Please use the following syntax to launch.");
-            System.out.println("Console: java -jar stocks.jar");
+            System.out.println("Console: java -jar " +
+                    "stocks.jar");
         }
 
     }

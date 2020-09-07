@@ -46,8 +46,8 @@ public class AlphaVantageDataGrabber implements DataGrabber {
                 .queryString("apikey", this.apiKey)
                 .asJson();
 
-        JSONObject stockInfo = response.getBody().getObject().getJSONObject("Global Quote");
         try {
+            JSONObject stockInfo = response.getBody().getObject().getJSONObject("Global Quote");
             String priceString = stockInfo.getString("05. price");
             if (priceString == null) {
                 throw new APICallException("Unable to get stock detail.");

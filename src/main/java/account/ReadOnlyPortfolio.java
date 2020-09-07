@@ -28,4 +28,11 @@ public interface ReadOnlyPortfolio {
      */
     ReadOnlyPosition position(String ticker);
 
+    /**
+     * Returns the amount of cash in this portfolio.
+     *
+     * @return the amount of cash
+     */
+    BigDecimal cash();
+
 }

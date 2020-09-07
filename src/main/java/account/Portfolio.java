@@ -90,6 +90,11 @@ public class Portfolio implements ReadOnlyPortfolio, Serializable {
         }
     }
 
+    @Override
+    public BigDecimal cash() {
+        return this.cash;
+    }
+
 
     /**
      * Add cash to the portfolio.
@@ -128,6 +133,13 @@ public class Portfolio implements ReadOnlyPortfolio, Serializable {
             return false;
         }
 
+        BigDecimal tradeValue = price.multiply(BigDecimal.valueOf(quantityChange));
+
+        // Make sure the user has enough cash if this is a buy
+        if (quantityChange > 0 && this.cash.compareTo(tradeValue) < 0) {
+            return false;
+        }
+
         // Find the position if there is one in our portfolio
         Position position = this.positions.get(ticker);
         boolean newPosition = false;
@@ -139,13 +151,6 @@ public class Portfolio implements ReadOnlyPortfolio, Serializable {
         // Put the position in our portfolio
         if (newPosition) {
             this.positions.put(ticker, new Position(ticker, accountLock));
-        }
-
-        BigDecimal tradeValue = price.multiply(BigDecimal.valueOf(quantityChange));
-
-        // Make sure the user has enough cash if this is a buy
-        if (quantityChange < 0 && this.cash.compareTo(tradeValue) < 0) {
-            return false;
         }
 
         position.newTransaction(quantityChange);

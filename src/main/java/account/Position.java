@@ -15,7 +15,7 @@ public class Position implements ReadOnlyPosition, Serializable {
 
     private String ticker;
     private int quantity;
-    private ArrayList<Transaction> transactions;
+    private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
     private transient final ReadWriteLock accountLock;
 

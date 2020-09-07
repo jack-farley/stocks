@@ -4,7 +4,6 @@ import account.ReadOnlyPortfolio;
 import account.ReadOnlyPosition;
 import controller.Controller;
 import controller.ControllerFactory;
-import data.grabber.AlphaVantageDataGrabber;
 import data.grabber.DataGrabber;
 import data.grabber.DataGrabberFactory;
 import data.grabber.DataGrabberType;
@@ -90,11 +89,13 @@ public class Console {
     private void portfolioInfo() {
         System.out.println("");
         System.out.println("Portfolio Information (" + this.currentPortfolio.name() + ")");
+        System.out.println("Cash: " + this.currentPortfolio.cash());
+        System.out.println();
 
         for (ReadOnlyPosition position : this.currentPortfolio.positions()) {
             this.positionInfo (position);
         }
-        System.out.println("");
+        System.out.println();
     }
 
     /** Prints info about the account. */
@@ -237,6 +238,7 @@ public class Console {
      * Displays help message.
      */
     private void help() {
+        System.out.println();
         if (this.currentPortfolio == null) {
             this.account_commands();
         }

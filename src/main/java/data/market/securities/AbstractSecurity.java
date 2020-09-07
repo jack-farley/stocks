@@ -30,7 +30,9 @@ public abstract class AbstractSecurity implements Security {
         writeLock.lock();
 
         try {
-            this.price = newPrice;
+            if (newPrice != null) {
+                this.price = newPrice;
+            }
         } finally {
             writeLock.unlock();
         }
@@ -42,6 +44,9 @@ public abstract class AbstractSecurity implements Security {
         readLock.lock();
 
         try {
+            if (this.price == null) {
+                System.out.println("Darn");
+            }
             return this.price;
         } finally {
             readLock.unlock();

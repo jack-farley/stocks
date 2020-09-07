@@ -1,7 +1,6 @@
 package data;
 
 import data.grabber.APICallException;
-import data.grabber.AlphaVantageDataGrabber;
 import data.grabber.DataGrabber;
 import data.grabber.SecurityDetail;
 import data.market.Market;
@@ -46,8 +45,12 @@ public class StockDataManager implements DataManager {
                 return null;
             }
         }
+        security = this.market.getSecurity(ticker);
 
         assert security != null;
+        if (security.getPrice() == null) {
+            System.out.println("Darn");
+        }
         return security.getPrice();
     }
 

@@ -124,12 +124,40 @@ public class Console {
         }
     }
 
+    /** Add cash to the specified portfolio. */
+    private void addCash() {
+        String name = scanner.next();
+        String amountString = scanner.next();
+        BigDecimal amount = new BigDecimal(amountString);
+        boolean success = this.controller.addCash(name, amount);
+        if (success) {
+            System.out.println(amount + " has been added to " + name + ".");
+        }
+        else {
+            System.out.println("Unable to add " + amountString + " to the portfolio " + name + ".");
+        }
+    }
+
+    /** Remove cash from the specified portfolio. */
+    private void removeCash() {
+        String name = scanner.next();
+        String amountString = scanner.next();
+        BigDecimal amount = new BigDecimal(amountString);
+        boolean success = this.controller.removeCash(name, amount);
+        if (success) {
+            System.out.println(amount + " has been removed from " + name + ".");
+        }
+        else {
+            System.out.println("Unable to remove " + amountString + " from the portfolio " + name + ".");
+        }
+    }
+
     /** Buy the specified security. */
     private void buySecurity() {
         String ticker = scanner.next();
         int quantity = scanner.nextInt();
 
-        boolean success = this.controller.buySecurity(this.currentPortfolio, ticker, quantity);
+        boolean success = this.controller.buySecurity(this.currentPortfolio.name(), ticker, quantity);
         if (success) {
             System.out.println("Success!");
         }
@@ -143,7 +171,7 @@ public class Console {
         String ticker = scanner.next();
         int quantity = scanner.nextInt();
 
-        boolean success = this.controller.sellSecurity(this.currentPortfolio, ticker, quantity);
+        boolean success = this.controller.sellSecurity(this.currentPortfolio.name(), ticker, quantity);
         if (success) {
             System.out.println("Success!");
         }
@@ -154,7 +182,7 @@ public class Console {
 
     /** Liquidate the current portfolio. */
     private void liquidatePortfolio() {
-        boolean success = this.controller.liquidatePortfolio(this.currentPortfolio);
+        boolean success = this.controller.liquidatePortfolio(this.currentPortfolio.name());
 
         if (success) {
             System.out.println("Success!");
@@ -209,6 +237,9 @@ public class Console {
         System.out.println("info: displays important metrics and lists portfolios");
         System.out.println("createportfolio <portfolio_name>: creates a new portfolio with the provided name");
         System.out.println("portfolio <portfolio_name>: navigate to the portfolio with name portfolio_name");
+        System.out.println("addcash <portfolio_name> <amount>: add the specified amount of cash to the portfolio");
+        System.out.println("removecash <portfolio_name> <amount>: removes the specified amount of cash from the " +
+                "portfolio");
         System.out.println("");
 
         this.help_command();
@@ -248,6 +279,66 @@ public class Console {
     }
 
     /**
+     * Handles account commands.
+     *
+     * @param command The command.
+     */
+    private void handleAccountCommand(String command) {
+        switch (command) {
+            // Account Commands
+            case "portfolio":
+                this.enterPortfolio();
+                break;
+            case "info":
+                this.accountInfo();
+                break;
+            case "createportfolio":
+                this.createPortfolio();
+                break;
+            case "addcash":
+                this.addCash();
+                break;
+            case "removecash":
+                this.removeCash();
+                break;
+
+            // Default
+            default:
+                System.out.println(command + " is not a valid account command.");
+        }
+    }
+
+    /**
+     * Handles portfolio-specific commands
+     *
+     * @param command The command.
+     */
+    private void handlePortfolioCommand(String command) {
+        switch (command) {
+            // Portfolio Commands
+            case "info":
+                this.portfolioInfo();
+                break;
+            case "buy":
+                this.buySecurity();
+                break;
+            case "sell":
+                this.sellSecurity();
+                break;
+            case "liquidate":
+                this.liquidatePortfolio();
+                break;
+            case "back":
+                this.currentPortfolio = null;
+                break;
+
+            // Default
+            default:
+                System.out.println(command + " is not a valid portfolio command.");
+        }
+    }
+
+    /**
      * Handles inputted commands.
      *
      * @return true if commands should continue to be processed, false if the program should exit.
@@ -274,39 +365,15 @@ public class Console {
             case "exit":
                 return false;
 
-            // Account Commands
-            case "portfolio":
-                this.enterPortfolio();
-                break;
-            case "info":
-                if (this.currentPortfolio == null) {
-                    this.accountInfo();
-                }
-                else {
-                    this.portfolioInfo();
-                }
-                break;
-            case "createportfolio":
-                this.createPortfolio();
-                break;
-
-            // Portfolio Commands
-            case "buy":
-                this.buySecurity();
-                break;
-            case "sell":
-                this.sellSecurity();
-                break;
-            case "liquidate":
-                this.liquidatePortfolio();
-                break;
-            case "back":
-                this.currentPortfolio = null;
-                break;
-
             // Default
             default:
-                System.out.println(command + " is not a valid command.");
+                // check if we are in the general account or a specific portfolio
+                if (currentPortfolio == null) {
+                    this.handleAccountCommand(command);
+                }
+                else {
+                    this.handlePortfolioCommand(command);
+                }
         }
         return true;
     }

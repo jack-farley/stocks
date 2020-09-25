@@ -83,17 +83,18 @@ public class Position implements ReadOnlyPosition, Serializable {
      * Creates a new transaction and updates the position to reflect it.
      *
      * @param quantityChange The change in the quantity of the security held in this position.
-     * @throws IllegalArgumentException if this transaction would result in a negative quantity for this position.
+     * @return True if successful, false otherwise.
      */
-    protected void newTransaction(int quantityChange) throws IllegalArgumentException {
+    protected boolean newTransaction(int quantityChange) {
         // Make sure we can execute this transaction.
-        if (this.quantity + quantity < 0) {
-            throw new IllegalArgumentException("Quantity cannot be less than 0.");
+        if (this.quantity + quantityChange < 0) {
+            return false;
         }
 
         // Execute the transaction.
         Transaction newTransaction = new Transaction(this.ticker, quantity);
         this.quantity += quantityChange;
         this.transactions.add(newTransaction);
+        return true;
     }
 }

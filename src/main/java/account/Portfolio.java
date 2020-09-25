@@ -60,6 +60,7 @@ public class Portfolio implements ReadOnlyPortfolio, Serializable {
                 }
                 sum = sum.add(positionVal);
             }
+            sum = sum.add(this.cash);
             return sum;
         } finally {
             readLock.unlock();
@@ -153,9 +154,12 @@ public class Portfolio implements ReadOnlyPortfolio, Serializable {
             this.positions.put(ticker, new Position(ticker, accountLock));
         }
 
-        position.newTransaction(quantityChange);
-        this.cash = this.cash.subtract(tradeValue);
-        this.positions.put(ticker, position);
-        return true;
+        boolean success = position.newTransaction(quantityChange);
+        if (success) {
+            this.cash = this.cash.subtract(tradeValue);
+            this.positions.put(ticker, position);
+            return true;
+        }
+        return false;
     }
 }

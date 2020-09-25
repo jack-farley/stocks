@@ -88,7 +88,7 @@ public class Account implements ReadOnlyAccount, Serializable {
         Lock writeLock = accountLock.writeLock();
         writeLock.lock();
 
-        try{
+        try {
             Portfolio portfolio = this.portfolios.get(name);
             if (portfolio != null) {
                 return false;
@@ -102,24 +102,88 @@ public class Account implements ReadOnlyAccount, Serializable {
     }
 
     /**
-     * Remove a portfolio from the account and sell all of its assets.
+     * Adds the specified amount of cash to the specified portfolio.
      *
-     * @param data DataManager for current market data.
-     * @param portfolio the portfolio
-     * @return true if the portfolio is liquidated successfully, false otherwise.
-     * If the portfolio is not liquidated successfully, it is likely because
-     * no portfolio exists with the specified name.
+     * @param portfolioName The name of the portfolio.
+     * @param amount The amount of cash to be added to the portfolio.
+     * @return True if successful, false otherwise.
      */
-    public boolean liquidatePortfolio (DataManager data, ReadOnlyPortfolio portfolio) {
+    public boolean addPortfolioCash(String portfolioName, BigDecimal amount) {
         Lock writeLock = accountLock.writeLock();
         writeLock.lock();
 
         try {
-            Portfolio confirmedPortfolio = this.portfolios.get(portfolio.name());
+            Portfolio portfolio = this.portfolios.get(portfolioName);
+            if (portfolio == null) {
+                return false;
+            }
+            // make sure the account has enough money
+            if (this.cash.compareTo(amount) >= 0) {
+                this.cash = this.cash.subtract(amount);
+                portfolio.addCash(amount);
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
+     * Removes the specified amount of cash from the specified portfolio and deposits back into the account's main cash
+     * location.
+     *
+     * @param portfolioName The name of the portfolio.
+     * @param amount The amount to be removed.
+     * @return True if successful, false otherwise.
+     */
+    public boolean removePortfolioCash(String portfolioName, BigDecimal amount) {
+        Lock writeLock = accountLock.writeLock();
+        writeLock.lock();
+
+        try {
+            Portfolio portfolio = this.portfolios.get(portfolioName);
+            if (portfolio == null) {
+                return false;
+            }
+
+            // make sure the portfolio has enough money
+            if (portfolio.cash().compareTo(amount) >= 0) {
+                portfolio.removeCash(amount);
+                this.cash = this.cash.add(amount);
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
+     * Remove a portfolio from the account and sell all of its assets.
+     *
+     * @param data DataManager for current market data.
+     * @param portfolioName The name of the portfolio to be liquidated.
+     * @return true if the portfolio is liquidated successfully, false otherwise.
+     * If the portfolio is not liquidated successfully, it is likely because
+     * no portfolio exists with the specified name.
+     */
+    public boolean liquidatePortfolio (DataManager data, String portfolioName) {
+        Lock writeLock = accountLock.writeLock();
+        writeLock.lock();
+
+        try {
+            Portfolio confirmedPortfolio = this.portfolios.get(portfolioName);
             if (confirmedPortfolio == null) {
                 return false;
             }
-            BigDecimal value = portfolio.value(data);
+            BigDecimal value = confirmedPortfolio.value(data);
             this.cash = this.cash.add(value);
             portfolios.remove(confirmedPortfolio.name());
             return true;
@@ -132,19 +196,19 @@ public class Account implements ReadOnlyAccount, Serializable {
      * Buys the security in the specified portfolio.
      *
      * @param data DataManager for current market data.
-     * @param portfolio The portfolio.
+     * @param portfolioName The name of the portfolio.
      * @param ticker The ticker of the security to be bought.
      * @param quantity The amount of the security to be bought.
      * @return true if the security is bought successfully, false otherwise.
      * Purchase could fail if the portfolio is not found or if it does not have enough
      * cash to make the purchase.
      */
-    public boolean buySecurity (DataManager data, ReadOnlyPortfolio portfolio, String ticker, int quantity) {
+    public boolean buySecurity (DataManager data, String portfolioName, String ticker, int quantity) {
         Lock writeLock = accountLock.writeLock();
         writeLock.lock();
 
         try {
-            Portfolio confirmedPortfolio = this.portfolios.get(portfolio.name());
+            Portfolio confirmedPortfolio = this.portfolios.get(portfolioName);
             if (confirmedPortfolio == null) {
                 return false;
             }
@@ -158,19 +222,19 @@ public class Account implements ReadOnlyAccount, Serializable {
      * Sells the security in the specified portfolio.
      *
      * @param data DataManager for current market data.
-     * @param portfolio the portfolio
+     * @param portfolioName The name of the portfolio.
      * @param ticker the ticker of the security to be sold
      * @param quantity the amount of the security to sell
      * @return true if the security is sold successfully, false otherwise. A false
      * return is likely because the portfolio could not be found or because
      * there was not enough of the security owned to sell the specified amount.
      */
-    public boolean sellSecurity (DataManager data, ReadOnlyPortfolio portfolio, String ticker, int quantity) {
+    public boolean sellSecurity (DataManager data, String portfolioName, String ticker, int quantity) {
         Lock writeLock = accountLock.writeLock();
         writeLock.lock();
 
         try {
-            Portfolio confirmedPortfolio = this.portfolios.get(portfolio.name());
+            Portfolio confirmedPortfolio = this.portfolios.get(portfolioName);
             if (confirmedPortfolio == null) {
                 return false;
             }

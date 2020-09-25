@@ -1,9 +1,6 @@
 package controller;
 
-import account.Account;
-import account.ReadOnlyAccount;
-import account.ReadOnlyPortfolio;
-import account.ReadOnlyPosition;
+import account.*;
 import data.DataManager;
 import data.StockDataManager;
 import data.grabber.DataGrabber;
@@ -123,6 +120,28 @@ public class Controller {
     }
 
     /**
+     * Adds cash to the specified portfolio.
+     *
+     * @param portfolioName The name of the portfolio.
+     * @param amount The amount to add.
+     * @return True if successful, false otherwise.
+     */
+    public boolean addCash(String portfolioName, BigDecimal amount) {
+        return this.account.addPortfolioCash(portfolioName, amount);
+    }
+
+    /**
+     * Removes cash from the specified portfolio.
+     *
+     * @param portfolioName The name of the portfolio.
+     * @param amount The amount to be removed.
+     * @return True if successful, false otherwise.
+     */
+    public boolean removeCash(String portfolioName, BigDecimal amount) {
+        return this.account.removePortfolioCash(portfolioName, amount);
+    }
+
+    /**
      * Gets the price of this position's security.
      *
      * @param position the position
@@ -155,40 +174,40 @@ public class Controller {
     /**
      * Remove a portfolio from the account and sell all of its assets.
      *
-     * @param portfolio the portfolio
+     * @param portfolioName The name of the portfolio to be liquidated.
      * @return true if the portfolio is liquidated successfully, false otherwise.
      * If the portfolio is not liquidated successfully, it is likely because
      * no portfolio exists with the specified name.
      */
-    public boolean liquidatePortfolio (ReadOnlyPortfolio portfolio) {
-        return this.account.liquidatePortfolio(this.dataManager, portfolio);
+    public boolean liquidatePortfolio (String portfolioName) {
+        return this.account.liquidatePortfolio(this.dataManager, portfolioName);
     }
 
     /**
      * Buys the security in the specified portfolio.
      *
-     * @param portfolio The portfolio.
+     * @param portfolioName The portfolio.
      * @param ticker The ticker of the security to be bought.
      * @param quantity The amount of the security to be bought.
      * @return true if the security is bought successfully, false otherwise.
      * Purchase could fail if the portfolio is not found or if it does not have enough
      * cash to make the purchase.
      */
-    public boolean buySecurity (ReadOnlyPortfolio portfolio, String ticker, int quantity) {
-        return this.account.buySecurity(this.dataManager, portfolio, ticker, quantity);
+    public boolean buySecurity (String portfolioName, String ticker, int quantity) {
+        return this.account.buySecurity(this.dataManager, portfolioName, ticker, quantity);
     }
 
     /**
      * Sells the security in the specified portfolio.
      *
-     * @param portfolio the portfolio
+     * @param portfolioName The name of the portfolio.
      * @param ticker the ticker of the security to be sold
      * @param quantity the amount of the security to sell
      * @return true if the security is sold successfully, false otherwise. A false
      * return is likely because the portfolio could not be found or because
      * there was not enough of the security owned to sell the specified amount.
      */
-    public boolean sellSecurity (ReadOnlyPortfolio portfolio, String ticker, int quantity) {
-        return this.account.sellSecurity(this.dataManager, portfolio, ticker, quantity);
+    public boolean sellSecurity (String portfolioName, String ticker, int quantity) {
+        return this.account.sellSecurity(this.dataManager, portfolioName, ticker, quantity);
     }
 }

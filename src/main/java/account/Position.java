@@ -17,7 +17,7 @@ public class Position implements ReadOnlyPosition, Serializable {
     private int quantity;
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
-    private transient final ReadWriteLock accountLock;
+    private final ReadWriteLock accountLock;
 
     /**
      * Creates a new position for the given security.

@@ -17,7 +17,7 @@ public class Portfolio implements ReadOnlyPortfolio, Serializable {
 
     private final String name;
     private final Map<String, Position> positions = new HashMap<String, Position>();
-    private transient final ReadWriteLock accountLock;
+    private final ReadWriteLock accountLock;
 
     private BigDecimal cash;
 

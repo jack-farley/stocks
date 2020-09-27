@@ -10,6 +10,7 @@ import data.grabber.DataGrabberType;
 
 import java.math.BigDecimal;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Console {
     private final int TICKER_BLOCK = 8;
@@ -26,24 +27,27 @@ public class Console {
     private Console() {};
 
     /** Creates a new account. */
-    private void newAccount() {
-        int cash = scanner.nextInt();
-        controller.newAccount(new BigDecimal(cash));
+    private void newAccount(StringTokenizer tokenizer) {
+        String cashString = tokenizer.nextToken();
+
+        controller.newAccount(new BigDecimal(cashString));
+        currentPortfolio = null;
     }
 
     /** Load an account from a file. */
-    private void loadAccount() {
-        String filename = scanner.next();
+    private void loadAccount(StringTokenizer tokenizer) {
+        String filename = tokenizer.nextToken();
         try {
             controller.loadAccount(filename);
+            System.out.println("Success!");
         } catch (IllegalArgumentException i) {
             System.out.println("Unable to load account.");
         }
     }
 
     /** Saves an account to a file. */
-    private void saveAccount() {
-        String filename = scanner.next();
+    private void saveAccount(StringTokenizer tokenizer) {
+        String filename = tokenizer.nextToken();
         try {
             controller.saveAccount(filename);
         } catch (IllegalArgumentException i) {
@@ -52,8 +56,8 @@ public class Console {
     }
 
     /** Moves the user into the current portfolio. */
-    private void enterPortfolio() {
-        String name = scanner.next();
+    private void enterPortfolio(StringTokenizer tokenizer) {
+        String name = tokenizer.nextToken();
         ReadOnlyPortfolio portfolio = controller.getPortfolio(name);
         if (portfolio == null) {
             System.out.println("There is no portfolio with that name.");
@@ -113,8 +117,8 @@ public class Console {
     }
 
     /** Creates a new portfolio. */
-    private void createPortfolio() {
-        String name = scanner.next();
+    private void createPortfolio(StringTokenizer tokenizer) {
+        String name = tokenizer.nextToken();
         boolean success = this.controller.createPortfolio(name);
         if (success) {
             System.out.println("Success!");
@@ -125,9 +129,9 @@ public class Console {
     }
 
     /** Add cash to the specified portfolio. */
-    private void addCash() {
-        String name = scanner.next();
-        String amountString = scanner.next();
+    private void addCash(StringTokenizer tokenizer) {
+        String name = tokenizer.nextToken();
+        String amountString = tokenizer.nextToken();
         BigDecimal amount = new BigDecimal(amountString);
         boolean success = this.controller.addCash(name, amount);
         if (success) {
@@ -139,9 +143,9 @@ public class Console {
     }
 
     /** Remove cash from the specified portfolio. */
-    private void removeCash() {
-        String name = scanner.next();
-        String amountString = scanner.next();
+    private void removeCash(StringTokenizer tokenizer) {
+        String name = tokenizer.nextToken();
+        String amountString = tokenizer.nextToken();
         BigDecimal amount = new BigDecimal(amountString);
         boolean success = this.controller.removeCash(name, amount);
         if (success) {
@@ -153,9 +157,10 @@ public class Console {
     }
 
     /** Buy the specified security. */
-    private void buySecurity() {
-        String ticker = scanner.next();
-        int quantity = scanner.nextInt();
+    private void buySecurity(StringTokenizer tokenizer) {
+        String ticker = tokenizer.nextToken();
+        String quantityString = tokenizer.nextToken();
+        int quantity = Integer.parseInt(quantityString);
 
         boolean success = this.controller.buySecurity(this.currentPortfolio.name(), ticker, quantity);
         if (success) {
@@ -167,9 +172,10 @@ public class Console {
     }
 
     /** Sell the specified security. */
-    private void sellSecurity() {
-        String ticker = scanner.next();
-        int quantity = scanner.nextInt();
+    private void sellSecurity(StringTokenizer tokenizer) {
+        String ticker = tokenizer.nextToken();
+        String quantityString = tokenizer.nextToken();
+        int quantity = Integer.parseInt(quantityString);
 
         boolean success = this.controller.sellSecurity(this.currentPortfolio.name(), ticker, quantity);
         if (success) {
@@ -283,23 +289,23 @@ public class Console {
      *
      * @param command The command.
      */
-    private void handleAccountCommand(String command) {
+    private void handleAccountCommand(String command, StringTokenizer tokenizer) {
         switch (command) {
             // Account Commands
             case "portfolio":
-                this.enterPortfolio();
+                this.enterPortfolio(tokenizer);
                 break;
             case "info":
                 this.accountInfo();
                 break;
             case "createportfolio":
-                this.createPortfolio();
+                this.createPortfolio(tokenizer);
                 break;
             case "addcash":
-                this.addCash();
+                this.addCash(tokenizer);
                 break;
             case "removecash":
-                this.removeCash();
+                this.removeCash(tokenizer);
                 break;
 
             // Default
@@ -313,17 +319,17 @@ public class Console {
      *
      * @param command The command.
      */
-    private void handlePortfolioCommand(String command) {
+    private void handlePortfolioCommand(String command, StringTokenizer tokenizer) {
         switch (command) {
             // Portfolio Commands
             case "info":
                 this.portfolioInfo();
                 break;
             case "buy":
-                this.buySecurity();
+                this.buySecurity(tokenizer);
                 break;
             case "sell":
-                this.sellSecurity();
+                this.sellSecurity(tokenizer);
                 break;
             case "liquidate":
                 this.liquidatePortfolio();
@@ -345,8 +351,11 @@ public class Console {
      */
     private boolean handleCommand() {
         this.printCommandLine();
-        String command = scanner.next();
-        switch (command) {
+        String command = scanner.nextLine();
+        StringTokenizer tokenizer = new StringTokenizer(command, " ");
+
+        String commandWord = tokenizer.nextToken();
+        switch (commandWord) {
             // Help
             case "help":
                 help();
@@ -354,13 +363,13 @@ public class Console {
 
             // General commands
             case "new":
-                this.newAccount();
+                this.newAccount(tokenizer);
                 break;
             case "load":
-                this.loadAccount();
+                this.loadAccount(tokenizer);
                 break;
             case "save":
-                this.saveAccount();
+                this.saveAccount(tokenizer);
                 break;
             case "exit":
                 return false;
@@ -369,10 +378,10 @@ public class Console {
             default:
                 // check if we are in the general account or a specific portfolio
                 if (currentPortfolio == null) {
-                    this.handleAccountCommand(command);
+                    this.handleAccountCommand(commandWord, tokenizer);
                 }
                 else {
-                    this.handlePortfolioCommand(command);
+                    this.handlePortfolioCommand(commandWord, tokenizer);
                 }
         }
         return true;
@@ -387,7 +396,7 @@ public class Console {
         System.out.println("Please enter your api key:");
         System.out.print("> ");
 
-        String apiKey = scanner.next();
+        String apiKey = scanner.nextLine();
         DataGrabber grabber = DataGrabberFactory.newAlphaVantageGrabber(apiKey);
         boolean success = grabber.testSetup();
         if (success) {
@@ -428,7 +437,7 @@ public class Console {
         while (!success) {
             System.out.println("Please enter the name of one of the list APIs to continue.");
             System.out.print("> ");
-            String grabberType = scanner.next();
+            String grabberType = scanner.nextLine();
 
             for (DataGrabberType type : DataGrabberType.values()) {
                 if (grabberType.equals(type.name())) {

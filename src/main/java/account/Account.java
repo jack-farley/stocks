@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Account implements ReadOnlyAccount, Serializable {
 
     private final Map<String, Portfolio> portfolios = new HashMap<String, Portfolio>();
-    private transient final ReadWriteLock accountLock = new ReentrantReadWriteLock();
+    private final ReadWriteLock accountLock = new ReentrantReadWriteLock();
 
     private BigDecimal addedCash;
     private BigDecimal cash;

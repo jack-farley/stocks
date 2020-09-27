@@ -46,19 +46,19 @@ public class Controller {
      * @throws IllegalArgumentException if the account cannot be loaded
      */
     public void loadAccount(String fileName) throws IllegalArgumentException {
-        Account account = null;
+        Account newAccount = null;
         try {
             FileInputStream fileIn = new FileInputStream(fileName);
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            account = (Account) in.readObject();
+            newAccount = (Account) in.readObject();
             in.close();
             fileIn.close();
         } catch (IOException | ClassNotFoundException i) {
             throw new IllegalArgumentException();
         }
 
-        if (account != null) {
-            this.account = account;
+        if (newAccount != null) {
+            this.account = newAccount;
         }
     }
 

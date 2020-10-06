@@ -75,7 +75,6 @@ public class Controller {
             out.writeObject(this.account);
             out.close();
             fileOut.close();
-            System.out.println("Serialized account data is saved in " + fileName);
         } catch (IOException i) {
             throw new IllegalArgumentException();
         }

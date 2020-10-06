@@ -8,6 +8,7 @@ import data.grabber.DataGrabber;
 import data.grabber.DataGrabberFactory;
 import data.grabber.DataGrabberType;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -35,21 +36,28 @@ public class Console {
     }
 
     /** Load an account from a file. */
-    private void loadAccount(StringTokenizer tokenizer) {
-        String filename = tokenizer.nextToken();
+    private void loadAccount() {
+        FileDialog dialog = new FileDialog((Frame) null, "Select an account file to load.");
+        dialog.setMode(FileDialog.LOAD);
+        dialog.setVisible(true);
+        String filename = dialog.getFile();
         try {
             controller.loadAccount(filename);
-            System.out.println("Success!");
+            System.out.println("Successfully loaded: " + filename);
         } catch (IllegalArgumentException i) {
             System.out.println("Unable to load account.");
         }
     }
 
     /** Saves an account to a file. */
-    private void saveAccount(StringTokenizer tokenizer) {
-        String filename = tokenizer.nextToken();
+    private void saveAccount() {
+        FileDialog dialog = new FileDialog((Frame) null, "Choose a location to save the account.");
+        dialog.setMode(FileDialog.SAVE);
+        dialog.setVisible(true);
+        String filename = dialog.getFile();
         try {
             controller.saveAccount(filename);
+            System.out.println("Successfully saved: " + filename);
         } catch (IllegalArgumentException i) {
             System.out.println("Unable to save account.");
         }
@@ -219,7 +227,7 @@ public class Console {
     private void general_commands() {
         System.out.println("General commands:");
         System.out.println("new <cash>: create a new account with the specified amount of cash.");
-        System.out.println("load <account_file>: load a new account from the account_file");
+        System.out.println("load: load a new account from an account_file");
         System.out.println("save <account_file>: save the current account to the account_file");
         System.out.println("exit: close the program");
         System.out.println("");
@@ -366,10 +374,10 @@ public class Console {
                 this.newAccount(tokenizer);
                 break;
             case "load":
-                this.loadAccount(tokenizer);
+                this.loadAccount();
                 break;
             case "save":
-                this.saveAccount(tokenizer);
+                this.saveAccount();
                 break;
             case "exit":
                 return false;

@@ -22,6 +22,7 @@ public class Console {
 
     private Controller controller = null;
     private final Scanner scanner = new Scanner(System.in);
+    private static PrintManager printer = new PrintManager();
 
     private ReadOnlyPortfolio currentPortfolio = null;
 
@@ -139,13 +140,11 @@ public class Console {
     /** Creates a new portfolio. */
     private void createPortfolio(StringTokenizer tokenizer) {
         String name = tokenizer.nextToken();
+
         boolean success = this.controller.createPortfolio(name);
-        if (success) {
-            System.out.println("Success!");
-        }
-        else {
-            System.out.println("Unable to create a new portfolio with name " + name + ".");
-        }
+
+        printer.result(success, "Success!",
+                "Unable to create a new portfolio with name " + name + ".");
     }
 
     /** Add cash to the specified portfolio. */
@@ -153,13 +152,11 @@ public class Console {
         String name = tokenizer.nextToken();
         String amountString = tokenizer.nextToken();
         BigDecimal amount = new BigDecimal(amountString);
+
         boolean success = this.controller.addCash(name, amount);
-        if (success) {
-            System.out.println(amount + " has been added to " + name + ".");
-        }
-        else {
-            System.out.println("Unable to add " + amountString + " to the portfolio " + name + ".");
-        }
+
+        printer.result(success, amount + " has been added to " + name + ".",
+                "Unable to add " + amountString + " to the portfolio " + name + ".");
     }
 
     /** Remove cash from the specified portfolio. */
@@ -167,13 +164,11 @@ public class Console {
         String name = tokenizer.nextToken();
         String amountString = tokenizer.nextToken();
         BigDecimal amount = new BigDecimal(amountString);
+
         boolean success = this.controller.removeCash(name, amount);
-        if (success) {
-            System.out.println(amount + " has been removed from " + name + ".");
-        }
-        else {
-            System.out.println("Unable to remove " + amountString + " from the portfolio " + name + ".");
-        }
+
+        printer.result(success, amount + " has been removed from " + name + ".",
+                "Unable to remove " + amountString + " from the portfolio " + name + ".");
     }
 
     /** Buy the specified security. */
@@ -183,12 +178,8 @@ public class Console {
         int quantity = Integer.parseInt(quantityString);
 
         boolean success = this.controller.buySecurity(this.currentPortfolio.name(), ticker, quantity);
-        if (success) {
-            System.out.println("Success!");
-        }
-        else {
-            System.out.println("Unable to execute trade");
-        }
+
+        printer.result(success, "Success!", "Unable to execute trade.");
     }
 
     /** Sell the specified security. */
@@ -198,12 +189,8 @@ public class Console {
         int quantity = Integer.parseInt(quantityString);
 
         boolean success = this.controller.sellSecurity(this.currentPortfolio.name(), ticker, quantity);
-        if (success) {
-            System.out.println("Success!");
-        }
-        else {
-            System.out.println("Unable to execute trade");
-        }
+
+        printer.result(success, "Success!", "Unable to execute trade.");
     }
 
     /** Liquidate the current portfolio. */
@@ -211,86 +198,12 @@ public class Console {
         boolean success = this.controller.liquidatePortfolio(this.currentPortfolio.name());
 
         if (success) {
-            System.out.println("Success!");
             this.currentPortfolio = null;
         }
-        else {
-            System.out.println("Unable to liquidate portfolio.");
-        }
+        printer.result(success, "Success!", "Unable to liquidate portfolio.");
     }
 
     /* Add functions for remaining commands here. */
-
-    /** Print the command line starter. */
-    private void printCommandLine() {
-        if (this.currentPortfolio == null) {
-            System.out.print("account/> ");
-        }
-        else {
-            System.out.print("account/" + this.currentPortfolio.name() + "/> ");
-        }
-    }
-
-    // Printing the commands
-
-    /**
-     * Prints the general commands.
-     */
-    private void general_commands() {
-        System.out.println("General commands:");
-        System.out.println("new <cash>: create a new account with the specified amount of cash.");
-        System.out.println("load: load a new account from an account_file");
-        System.out.println("save <account_file>: save the current account to the account_file");
-        System.out.println("detail <security_ticker>: provides information on the specified security");
-        System.out.println("exit: close the program");
-        System.out.println("");
-    }
-
-    /**
-     * Prints the help command.
-     */
-    private void help_command() {
-        System.out.println("help: list commands");
-        System.out.println("");
-    }
-
-    /**
-     * Prints a list of account-level commands.
-     */
-    private void account_commands() {
-        this.general_commands();
-
-        System.out.println("Account commands:");
-        System.out.println("info: displays important metrics and lists portfolios");
-        System.out.println("cp <portfolio_name>: creates a new portfolio with the provided name");
-        System.out.println("pf <portfolio_name>: navigate to the portfolio with name portfolio_name");
-        System.out.println("addcash <portfolio_name> <amount>: add the specified amount of cash to the portfolio");
-        System.out.println("removecash <portfolio_name> <amount>: removes the specified amount of cash from the " +
-                "portfolio");
-        System.out.println("");
-
-        this.help_command();
-    }
-
-    /**
-     * Prints a list of portfolio-specific commands.
-     */
-    private void portfolio_commands() {
-        System.out.println();
-        this.general_commands();
-
-        System.out.println("Portfolio commands:");
-        System.out.println("info: displays important metrics and lists positions");
-        System.out.println("buy <security_ticker> <quantity>: buy the security with ticker security_ticker in the " +
-                "specified quantity");
-        System.out.println("sell <security_ticker> <quantity>: sell the security with ticker security_ticker in " +
-                "the specified quantity");
-        System.out.println("liquidate: sell all securities and close the portfolio");
-        System.out.println("back: exit the current portfolio.");
-        System.out.println();
-
-        this.help_command();
-    }
 
     /**
      * Displays help message.
@@ -298,12 +211,25 @@ public class Console {
     private void help() {
         System.out.println();
         if (this.currentPortfolio == null) {
-            this.account_commands();
+            printer.accountCommands();
         }
         else {
-            this.portfolio_commands();
+            printer.portfolioCommands();
         }
     }
+
+    /** Print the command line starter. */
+    private void printCommandLine() {
+        if (this.currentPortfolio == null) {
+            printer.print("account/> ");
+        }
+        else {
+            printer.print("account/" + this.currentPortfolio.name() + "/> ");
+        }
+    }
+
+
+    // Command handlers.
 
     /**
      * Handles account commands.

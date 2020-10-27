@@ -209,4 +209,14 @@ public class Controller {
     public boolean sellSecurity (String portfolioName, String ticker, int quantity) {
         return this.account.sellSecurity(this.dataManager, portfolioName, ticker, quantity);
     }
+
+    /**
+     * Provides the price of the specified security.
+     *
+     * @param ticker The ticker of the security.
+     * @return The security's price, or null if the security cannot be located.
+     */
+    public BigDecimal getSecurityPrice (String ticker) {
+        return this.dataManager.getPrice(ticker);
+    }
 }

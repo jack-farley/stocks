@@ -63,6 +63,18 @@ public class Console {
         }
     }
 
+    /** Provides information on the specified security. */
+    private void securityDetail(StringTokenizer tokenizer) {
+        String ticker = tokenizer.nextToken();
+        BigDecimal price = controller.getSecurityPrice(ticker);
+        if (price == null) {
+            System.out.println("There is no security with that name.");
+        }
+        else {
+            System.out.println(ticker + ": " + price.toString());
+        }
+    }
+
     /** Moves the user into the current portfolio. */
     private void enterPortfolio(StringTokenizer tokenizer) {
         String name = tokenizer.nextToken();
@@ -229,6 +241,7 @@ public class Console {
         System.out.println("new <cash>: create a new account with the specified amount of cash.");
         System.out.println("load: load a new account from an account_file");
         System.out.println("save <account_file>: save the current account to the account_file");
+        System.out.println("detail <security_ticker>: provides information on the specified security");
         System.out.println("exit: close the program");
         System.out.println("");
     }
@@ -249,8 +262,8 @@ public class Console {
 
         System.out.println("Account commands:");
         System.out.println("info: displays important metrics and lists portfolios");
-        System.out.println("createportfolio <portfolio_name>: creates a new portfolio with the provided name");
-        System.out.println("portfolio <portfolio_name>: navigate to the portfolio with name portfolio_name");
+        System.out.println("cp <portfolio_name>: creates a new portfolio with the provided name");
+        System.out.println("pf <portfolio_name>: navigate to the portfolio with name portfolio_name");
         System.out.println("addcash <portfolio_name> <amount>: add the specified amount of cash to the portfolio");
         System.out.println("removecash <portfolio_name> <amount>: removes the specified amount of cash from the " +
                 "portfolio");
@@ -300,13 +313,13 @@ public class Console {
     private void handleAccountCommand(String command, StringTokenizer tokenizer) {
         switch (command) {
             // Account Commands
-            case "portfolio":
+            case "pf":
                 this.enterPortfolio(tokenizer);
                 break;
             case "info":
                 this.accountInfo();
                 break;
-            case "createportfolio":
+            case "cp":
                 this.createPortfolio(tokenizer);
                 break;
             case "addcash":
@@ -378,6 +391,9 @@ public class Console {
                 break;
             case "save":
                 this.saveAccount();
+                break;
+            case "detail":
+                this.securityDetail(tokenizer);
                 break;
             case "exit":
                 return false;

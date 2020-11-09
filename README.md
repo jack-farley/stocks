@@ -5,6 +5,6 @@ To use the simulator, the user must first select an API to get current market da
 input their credentials for the api.
 
 I have only implemented a console interface for this application so far, but I plan
-to create GUI soon.
+to create a GUI soon.
 
 Created by Jack Farley.

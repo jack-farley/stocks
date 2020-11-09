@@ -16,7 +16,7 @@ public class PrintManager {
      *
      * @param line The line to be printed.
      */
-    private void println(String line) {
+    public void println(String line) {
         System.out.println(line);
     }
 
@@ -25,10 +25,17 @@ public class PrintManager {
      *
      * @param lines The lines to be printed.
      */
-    private void println(String[] lines) {
+    public void println(String[] lines) {
         for (String line : lines) {
             println(line);
         }
+    }
+
+    /**
+     * Prints an empty line.
+     */
+    public void println() {
+        println("");
     }
 
     /**
@@ -47,8 +54,19 @@ public class PrintManager {
      * @param line The line in the message.
      */
     public void printMsg(String line) {
+        println();
         println(line);
-        println("");
+        println();
+    }
+
+    /**
+     * Prints a prompt to the user to input information.
+     *
+     * @param prompt The prompt.
+     */
+    public void printPrompt(String prompt) {
+        println();
+        println(prompt);
     }
 
     /**
@@ -63,6 +81,18 @@ public class PrintManager {
             printMsg(successMsg);
         }
         else {
+            printMsg(errorMsg);
+        }
+    }
+
+    /**
+     * Prints a message regarding the results of the requested action.
+     *
+     * @param success Whether or not the action was executed successfully.
+     * @param errorMsg The message to be printed upon failure.
+     */
+    public void result(boolean success, String errorMsg) {
+        if (!success) {
             printMsg(errorMsg);
         }
     }
@@ -92,6 +122,7 @@ public class PrintManager {
      * Prints info about account-level commands.
      */
     public void accountCommands() {
+        println();
         generalCommands();
         println("");
 
@@ -112,8 +143,9 @@ public class PrintManager {
      * Prints info about portfolio-specific commands.
      */
     public void portfolioCommands() {
+        println();
         generalCommands();
-        println("");
+        println();
 
         println("Portfolio commands:");
         println("info: displays important metrics and lists positions");
@@ -123,9 +155,9 @@ public class PrintManager {
                 "quantity");
         println("liquidate: sell all securities and close the portfolio");
         println("back: exit the current portfolio.");
-        println("");
+        println();
 
         helpCommand();
-        println("");
+        println();
     }
 }

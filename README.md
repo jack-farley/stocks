@@ -8,7 +8,3 @@ I have only implemented a console interface for this application so far, but I p
 to create GUI soon.
 
 Created by Jack Farley.
-
-
-Note: This project is a work in progress. I am still debugging, adding new features, and
-building out the simulator.
